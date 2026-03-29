@@ -1,10 +1,10 @@
 # P1 - Landing Page Creation
 
 ## Overview
-Create an initial landing page that introduces the AllShared community sharing platform concept, showcasing the values of generosity, sustainability, and community connection.
+Create an initial landing page that introduces the FreelyShared community sharing platform concept, showcasing the values of generosity, sustainability, and community connection.
 
 ## User Story
-As a visitor to the site, I want to understand what AllShared is about and how I can participate in community sharing, so that I can decide if this platform aligns with my values and needs.
+As a visitor to the site, I want to understand what FreelyShared is about and how I can participate in community sharing, so that I can decide if this platform aligns with my values and needs.
 
 ## Design Requirements
 
@@ -15,7 +15,7 @@ As a visitor to the site, I want to understand what AllShared is about and how I
 - **Visual**: Hero image or illustration representing community sharing
 
 ### Core Concept Section
-- **What is AllShared**: Explain the platform as a way to share items within your community
+- **What is FreelyShared**: Explain the platform as a way to share items within your community
 - **How it Works**: Simple 3-step process (List items → Browse nearby → Borrow for free)
 - **Community Focus**: Emphasize local, trusted neighborhood connections
 

@@ -1,10 +1,10 @@
 # P2 - Geographic Signup Flow
 
 ## Overview
-Implement a geographic-based signup system that allows users to indicate interest in AllShared by entering their suburb, viewing local signup activity on a map, and registering for updates when the service becomes available in their area.
+Implement a geographic-based signup system that allows users to indicate interest in FreelyShared by entering their suburb, viewing local signup activity on a map, and registering for updates when the service becomes available in their area.
 
 ## User Story
-As a visitor interested in AllShared, I want to enter my suburb to see how many people in my area are also interested, so that I can gauge local community interest and sign up to be notified when the service launches in my area.
+As a visitor interested in FreelyShared, I want to enter my suburb to see how many people in my area are also interested, so that I can gauge local community interest and sign up to be notified when the service launches in my area.
 
 ## User Flow
 1. **Homepage**: User enters suburb in the prominent input field

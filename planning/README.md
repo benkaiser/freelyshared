@@ -1,6 +1,6 @@
 # Planning Directory
 
-This directory contains feature planning documents designed for LLM consumption to implement AllShared platform features.
+This directory contains feature planning documents designed for LLM consumption to implement FreelyShared platform features.
 
 ## Document Structure
 

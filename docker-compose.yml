@@ -5,7 +5,7 @@ services:
     image: postgres:15
     environment:
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: allshared_development
+      POSTGRES_DB: freelyshared_development
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -25,7 +25,7 @@ services:
       - db
     environment:
       - RAILS_ENV=development
-      - DATABASE_URL=postgres://postgres:password@db:5432/allshared_development
+      - DATABASE_URL=postgres://postgres:password@db:5432/freelyshared_development
     stdin_open: true
     tty: true
 

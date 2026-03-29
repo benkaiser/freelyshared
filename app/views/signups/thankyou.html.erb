@@ -1,4 +1,4 @@
-<% content_for :title, "Thank you! - AllShared" %>
+<% content_for :title, "Thank you! - FreelyShared" %>
 
 <div class="container my-5">
   <div class="row">
@@ -11,7 +11,7 @@
 
       <p class="lead mb-4">
         You're now on the waitlist for <strong><%= @geographic_signup.suburb_name %></strong>.
-        We'll notify you as soon as AllShared launches in your area.
+        We'll notify you as soon as FreelyShared launches in your area.
       </p>
 
       <div class="card mb-4">
@@ -31,8 +31,8 @@
               data-controller="share-button"
               data-action="click->share-button#share"
               data-share-button-url-value="<%= @share_url %>"
-              data-share-button-title-value="Join AllShared in <%= @geographic_signup.suburb_name %>"
-              data-share-button-text-value="I just joined the AllShared waitlist for <%= @geographic_signup.suburb_name %>! Join me and let's build a sharing community together."
+              data-share-button-title-value="Join FreelyShared in <%= @geographic_signup.suburb_name %>"
+              data-share-button-text-value="I just joined the FreelyShared waitlist for <%= @geographic_signup.suburb_name %>! Join me and let's build a sharing community together."
             >
               <i class="bi bi-share-fill me-2"></i>Share with friends
             </button>
