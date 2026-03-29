@@ -4,8 +4,8 @@ Read `PROJECT_OVERVIEW.md` for the project's purpose, how it works, and current 
 
 ## Key points
 
-- This is a **church-based sharing platform**, not a general community sharing app
-- Only the **landing page + signup flow** is built — no item listing/borrowing yet
+- This is a **church-based sharing platform** for both **goods and services/skills**, not a general community sharing app
+- Only the **landing page + signup flow** is built — no goods listing, services offering, or browsing yet
 - Churches need **5 members** to activate
 - The codebase uses **Rails 8 + Stimulus + Bootstrap** (no React)
 - Use `beans` CLI to manage work items (`.beans/` directory)
