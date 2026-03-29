@@ -1,0 +1,171 @@
+<% content_for :title, "Interest in #{@suburb} - AllShared" %>
+
+<!-- Hero Section -->
+<section class="hero bg-primary text-white py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 mb-3">Interest in <strong><%= @suburb %></strong></h1>
+        <p class="lead mb-4">
+          See who else is excited about AllShared in your area
+        </p>
+
+        <!-- Signup Count -->
+        <div class="bg-white bg-opacity-10 rounded-4 p-4 mb-4">
+          <div class="display-1 text-white fw-bold"><%= @signup_count %></div>
+          <p class="lead text-white mb-2">people interested in your area</p>
+          <p class="text-white-50 small mb-0">
+            <i class="bi bi-geo-alt"></i> Within 50km of <%= @suburb %>
+          </p>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mb-4">
+          <div class="d-flex align-items-center text-white-75">
+            <i class="bi bi-people-fill me-2"></i>
+            <span class="small">Growing community</span>
+          </div>
+          <div class="d-flex align-items-center text-white-75">
+            <i class="bi bi-bell me-2"></i>
+            <span class="small">Early notifications</span>
+          </div>
+          <div class="d-flex align-items-center text-white-75">
+            <i class="bi bi-heart me-2"></i>
+            <span class="small">Free sharing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Map and Form Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <!-- Map Container -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-header bg-white border-bottom-0">
+            <h5 class="card-title mb-0 text-center">
+              <i class="bi bi-map text-primary me-2"></i>
+              Community Interest Map
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div
+              id="signup-map"
+              style="height: 400px; width: 100%;"
+              data-controller="signup-map"
+              data-signup-map-lat-value="<%= @lat %>"
+              data-signup-map-lng-value="<%= @lng %>"
+              data-signup-map-suburb-value="<%= @suburb %>"
+              data-signup-map-signup-count-value="<%= @signup_count %>"
+            ></div>
+          </div>
+          <div class="card-footer bg-light text-center">
+            <small class="text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              Each pulsing dot represents someone who's joined the waitlist in your area
+            </small>
+          </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white text-center">
+            <h3 class="card-title mb-0">
+              <i class="bi bi-person-plus me-2"></i>
+              Join the waitlist for <%= @suburb %>
+            </h3>
+          </div>
+          <div class="card-body p-4">
+            <%= form_with model: @geographic_signup, url: signups_path, local: true, class: "row g-3" do |form| %>
+              <%= form.hidden_field :suburb_name, value: @suburb %>
+              <%= form.hidden_field :latitude, value: @lat %>
+              <%= form.hidden_field :longitude, value: @lng %>
+              <%= form.hidden_field :country_code, value: "AU" %>
+
+              <% if @geographic_signup.errors.any? %>
+                <div class="col-12">
+                  <div class="alert alert-danger">
+                    <h5 class="alert-heading">
+                      <i class="bi bi-exclamation-triangle me-2"></i>
+                      Please fix the following errors:
+                    </h5>
+                    <ul class="mb-0">
+                      <% @geographic_signup.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="col-md-6">
+                <%= form.label :name, class: "form-label fw-semibold" %>
+                <%= form.text_field :name, class: "form-control form-control-lg", placeholder: "Your name", required: true %>
+              </div>
+
+              <div class="col-md-6">
+                <%= form.label :email, class: "form-label fw-semibold" %>
+                <%= form.email_field :email, class: "form-control form-control-lg", placeholder: "your@email.com", required: true %>
+              </div>
+
+              <div class="col-12 text-center mt-4">
+                <%= form.submit "Join the waitlist", class: "btn btn-success btn-lg px-5 py-3" %>
+              </div>
+
+              <div class="col-12">
+                <div class="bg-light rounded p-3 mt-3">
+                  <p class="text-muted small text-center mb-0">
+                    <i class="bi bi-shield-check text-success me-1"></i>
+                    By joining, you'll be notified when AllShared launches in your area.
+                    We'll never spam you or share your email.
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="text-center mb-5">
+          <h2 class="h3 mb-3">Why join the waitlist?</h2>
+          <p class="text-muted">Be part of the sharing revolution in <%= @suburb %></p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-4 text-center">
+            <div class="benefit-card">
+              <i class="bi bi-lightning-charge text-warning mb-3" style="font-size: 2.5rem;"></i>
+              <h5 class="fw-bold">First Access</h5>
+              <p class="text-muted small">Get early access when we launch in your area</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="benefit-card">
+              <i class="bi bi-people text-primary mb-3" style="font-size: 2.5rem;"></i>
+              <h5 class="fw-bold">Build Community</h5>
+              <p class="text-muted small">Connect with neighbors who share your values</p>
+            </div>
+          </div>
+          <div class="col-md-4 text-center">
+            <div class="benefit-card">
+              <i class="bi bi-gift text-success mb-3" style="font-size: 2.5rem;"></i>
+              <h5 class="fw-bold">Free Sharing</h5>
+              <p class="text-muted small">Borrow and lend items without any costs</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

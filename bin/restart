@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+echo "🔄 Restarting AllShared containers..."
+docker-compose restart
+echo "✅ Containers restarted!"
+echo "📱 Visit: http://localhost:8888"

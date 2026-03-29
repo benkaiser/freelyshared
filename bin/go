@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+echo "🚀 Starting AllShared development environment..."
+
+# Build and start containers
+docker-compose up --build -d
+
+echo "✅ Containers started!"
+echo "📊 Setting up database..."
+
+# Setup database
+docker-compose exec web rails db:create db:migrate
+
+echo "🎉 AllShared is ready!"
+echo "📱 Visit: http://localhost:8888"
+echo "🛑 To stop: docker-compose down"

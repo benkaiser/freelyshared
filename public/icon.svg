@@ -1,0 +1,45 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d6efd;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6f42c1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)"/>
+
+  <!-- Sharing/exchange arrows -->
+  <g fill="white" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left to right arrow -->
+    <path d="M120 180 L360 180 M330 150 L360 180 L330 210"/>
+
+    <!-- Right to left arrow -->
+    <path d="M392 332 L152 332 M182 302 L152 332 L182 362"/>
+  </g>
+
+  <!-- Community dots representing people/items -->
+  <g fill="white" opacity="0.9">
+    <!-- Left side cluster -->
+    <circle cx="80" cy="180" r="20"/>
+    <circle cx="60" cy="220" r="16"/>
+    <circle cx="100" cy="240" r="16"/>
+
+    <!-- Right side cluster -->
+    <circle cx="432" cy="332" r="20"/>
+    <circle cx="452" cy="292" r="16"/>
+    <circle cx="412" cy="272" r="16"/>
+  </g>
+
+  <!-- Center connecting hub -->
+  <circle cx="256" cy="256" r="32" fill="white" opacity="0.95"/>
+  <circle cx="256" cy="256" r="20" fill="#0d6efd"/>
+
+  <!-- Small sharing icons in center -->
+  <g fill="white" opacity="0.8">
+    <circle cx="246" cy="246" r="3"/>
+    <circle cx="266" cy="246" r="3"/>
+    <circle cx="246" cy="266" r="3"/>
+    <circle cx="266" cy="266" r="3"/>
+  </g>
+</svg>

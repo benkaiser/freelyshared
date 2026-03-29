@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+
+echo "🧪 Testing AllShared setup..."
+
+# Check if containers are running
+if ! docker-compose ps | grep -q "Up"; then
+    echo "❌ Containers are not running. Run ./bin/go first."
+    exit 1
+fi
+
+# Test database connection
+echo "🔍 Testing database connection..."
+docker-compose exec -T web rails runner "puts 'Database connection: ' + (ActiveRecord::Base.connection.active? ? '✅ OK' : '❌ Failed')"
+
+# Test esbuild is configured
+echo "🔍 Testing esbuild configuration..."
+if [ -f "app/javascript/application.js" ]; then
+    echo "✅ JavaScript entry point exists"
+else
+    echo "❌ JavaScript entry point missing"
+fi
+
+# Test application starts
+echo "🔍 Testing application response..."
+if curl -s http://localhost:8888 > /dev/null; then
+    echo "✅ Application responding on port 8888"
+else
+    echo "❌ Application not responding on port 8888"
+fi
+
+echo "🎉 Setup test complete!"

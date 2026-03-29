@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Allshared" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <%= link_to root_path, class: "navbar-brand d-flex align-items-center text-decoration-none" do %>
+          <div class="brand-icon me-2">
+            <i class="bi bi-people-fill text-primary" style="font-size: 1.5rem;"></i>
+          </div>
+          <span class="fw-bold text-primary fs-4">AllShared</span>
+        <% end %>
+
+        <!-- Future navigation items can go here -->
+        <div class="navbar-nav ms-auto">
+          <!-- Space for future nav items -->
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+      <%= yield %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-auto">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-people-fill text-primary me-2"></i>
+              <span class="text-muted">
+                <strong>AllShared</strong> - Building sharing communities
+              </span>
+            </div>
+          </div>
+          <div class="col-md-6 text-md-end mt-2 mt-md-0">
+            <small class="text-muted">
+              Inspired by Acts 4:32 -
+              <em>"They shared everything they had"</em>
+            </small>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

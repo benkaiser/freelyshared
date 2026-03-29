@@ -1,0 +1,59 @@
+<% content_for :title, "Thank you! - AllShared" %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-6 mx-auto text-center">
+      <div class="mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+      </div>
+
+      <h1 class="display-4 mb-3">Thank you, <%= @geographic_signup.name %>!</h1>
+
+      <p class="lead mb-4">
+        You're now on the waitlist for <strong><%= @geographic_signup.suburb_name %></strong>.
+        We'll notify you as soon as AllShared launches in your area.
+      </p>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-people-fill text-primary me-2"></i>
+            Help grow your community
+          </h5>
+          <p class="card-text text-muted">
+            The more people who sign up in your area, the sooner we can launch!
+            Share this with your neighbors and friends.
+          </p>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button
+              class="btn btn-primary"
+              data-controller="share-button"
+              data-action="click->share-button#share"
+              data-share-button-url-value="<%= @share_url %>"
+              data-share-button-title-value="Join AllShared in <%= @geographic_signup.suburb_name %>"
+              data-share-button-text-value="I just joined the AllShared waitlist for <%= @geographic_signup.suburb_name %>! Join me and let's build a sharing community together."
+            >
+              <i class="bi bi-share-fill me-2"></i>Share with friends
+            </button>
+
+            <button
+              class="btn btn-outline-secondary"
+              data-controller="copy-button"
+              data-action="click->copy-button#copy"
+              data-copy-button-text-value="<%= @share_url %>"
+            >
+              <i class="bi bi-clipboard me-2"></i>Copy link
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <a href="<%= root_path %>" class="btn btn-outline-primary">
+          <i class="bi bi-house-fill me-2"></i>Back to home
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
