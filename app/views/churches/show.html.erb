@@ -77,6 +77,17 @@
                 <%= form.email_field :email, class: "form-control form-control-lg", placeholder: "your@email.com", required: true %>
               </div>
 
+              <div class="col-md-6">
+                <%= form.label :password, class: "form-label fw-semibold" %>
+                <%= form.password_field :password, class: "form-control form-control-lg", placeholder: "Choose a password", required: true, minlength: 6 %>
+                <small class="text-muted">Minimum 6 characters</small>
+              </div>
+
+              <div class="col-md-6">
+                <%= form.label :password_confirmation, "Confirm Password", class: "form-label fw-semibold" %>
+                <%= form.password_field :password_confirmation, class: "form-control form-control-lg", placeholder: "Confirm your password", required: true %>
+              </div>
+
               <div class="col-12 text-center mt-4">
                 <%= form.submit "Join this church", class: "btn btn-success btn-lg px-5 py-3" %>
               </div>

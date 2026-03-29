@@ -1,0 +1,47 @@
+<% content_for :title, "Services Directory - FreelyShared" %>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-tools text-primary me-2"></i>Services Directory</h2>
+    <%= link_to new_service_path, class: "btn btn-primary" do %>
+      <i class="bi bi-plus-lg me-1"></i> Offer a Service
+    <% end %>
+  </div>
+
+  <% if @services.any? %>
+    <div class="row g-3">
+      <% @services.each do |service| %>
+        <div class="col-md-6 col-lg-4">
+          <%= link_to service_path(service), class: "text-decoration-none" do %>
+            <div class="card listing-card h-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <img src="<%= service.church_member.gravatar_url(40) %>" class="rounded-circle me-2" width="40" height="40" alt="">
+                  <div>
+                    <h5 class="card-title mb-0 text-dark"><%= service.title %></h5>
+                    <small class="text-muted"><%= service.church_member.name %></small>
+                  </div>
+                </div>
+                <% if service.description.present? %>
+                  <p class="card-text text-muted small"><%= truncate(service.description, length: 120) %></p>
+                <% end %>
+                <% if service.contact_preference.present? %>
+                  <small class="text-muted"><i class="bi bi-chat-dots me-1"></i><%= service.contact_preference %></small>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <i class="bi bi-tools d-block"></i>
+      <h4 class="text-muted">No services yet</h4>
+      <p class="text-muted">Offer your skills and services to your church community!</p>
+      <%= link_to new_service_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg me-1"></i> Offer Your First Service
+      <% end %>
+    </div>
+  <% end %>
+</div>

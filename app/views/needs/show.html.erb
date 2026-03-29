@@ -1,0 +1,68 @@
+<% content_for :title, "#{@need.title} - FreelyShared" %>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to "Needs", needs_path %></li>
+      <li class="breadcrumb-item active"><%= @need.title %></li>
+    </ol>
+  </nav>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h2><%= @need.title %></h2>
+              <span class="badge bg-<%= @need.status == 'open' ? 'success' : 'secondary' %>"><%= @need.status %></span>
+              <% if @need.expired? %>
+                <span class="badge bg-warning text-dark">Expired</span>
+              <% else %>
+                <small class="text-muted ms-2">Expires in <%= distance_of_time_in_words_to_now(@need.expires_at) %></small>
+              <% end %>
+            </div>
+            <% if @need.owner?(current_church_member) %>
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><%= link_to "Edit", edit_need_path(@need), class: "dropdown-item" %></li>
+                  <% if @need.status == "open" %>
+                    <li><%= button_to "Mark Fulfilled", fulfill_need_path(@need), method: :patch, class: "dropdown-item" %></li>
+                  <% else %>
+                    <li><%= button_to "Reopen", reopen_need_path(@need), method: :patch, class: "dropdown-item" %></li>
+                  <% end %>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= button_to "Delete", @need, method: :delete, class: "dropdown-item text-danger", data: { turbo_confirm: "Are you sure?" } %></li>
+                </ul>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="d-flex align-items-center mb-3">
+            <img src="<%= @need.church_member.gravatar_url(48) %>" class="rounded-circle me-3" width="48" height="48" alt="">
+            <div>
+              <strong><%= @need.church_member.name %></strong>
+              <br><small class="text-muted">Posted <%= time_ago_in_words(@need.created_at) %> ago</small>
+            </div>
+          </div>
+
+          <% if @need.description.present? %>
+            <div class="mb-3">
+              <%= simple_format(@need.description) %>
+            </div>
+          <% end %>
+
+          <% if @need.contact_info.present? %>
+            <div class="alert alert-info">
+              <i class="bi bi-chat-dots me-1"></i>
+              <strong>Contact:</strong> <%= @need.contact_info %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

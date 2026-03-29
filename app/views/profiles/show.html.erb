@@ -1,0 +1,96 @@
+<% content_for :title, "My Profile - FreelyShared" %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="text-center mb-4">
+        <img src="<%= @member.gravatar_url(120) %>" class="rounded-circle mb-3" width="120" height="120" alt="">
+        <h2><%= @member.name %></h2>
+        <p class="text-muted"><%= @member.email %></p>
+        <% if @member.phone.present? %>
+          <p class="text-muted"><i class="bi bi-phone me-1"></i><%= @member.phone %></p>
+        <% end %>
+      </div>
+
+      <div class="d-flex justify-content-center gap-2 mb-4">
+        <%= link_to edit_profile_path, class: "btn btn-outline-primary" do %>
+          <i class="bi bi-pencil me-1"></i> Edit Profile
+        <% end %>
+        <%= link_to notification_settings_path, class: "btn btn-outline-secondary" do %>
+          <i class="bi bi-bell me-1"></i> Notifications
+        <% end %>
+        <%= link_to members_path, class: "btn btn-outline-secondary" do %>
+          <i class="bi bi-people me-1"></i> Directory
+        <% end %>
+        <% if current_church_member&.admin? %>
+          <% pending_count = current_church.church_members.pending_approval.count %>
+          <%= link_to church_admin_path, class: "btn btn-outline-primary" do %>
+            <i class="bi bi-shield-check me-1"></i> Admin
+            <% if pending_count > 0 %>
+              <span class="badge bg-danger"><%= pending_count %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= link_to destroy_church_member_session_path, data: { turbo_method: :delete }, class: "btn btn-outline-danger" do %>
+          <i class="bi bi-box-arrow-right me-1"></i> Sign out
+        <% end %>
+      </div>
+
+      <!-- My Items -->
+      <% if @items.any? %>
+        <h4 class="mb-3">My Items (<%= @items.count %>)</h4>
+        <div class="row g-3 mb-4">
+          <% @items.each do |item| %>
+            <div class="col-6 col-md-4">
+              <%= link_to item, class: "text-decoration-none" do %>
+                <div class="card listing-card h-100">
+                  <% if item.photo.attached? %>
+                    <%= image_tag item.photo_thumbnail, class: "card-img-top", style: "height: 120px; object-fit: cover;" %>
+                  <% end %>
+                  <div class="card-body p-2">
+                    <h6 class="card-title mb-0 text-dark"><%= item.title %></h6>
+                    <small>
+                      <span class="availability-dot <%= item.available? ? 'available' : 'unavailable' %>"></span>
+                      <span class="text-muted"><%= item.available? ? 'Available' : 'Unavailable' %></span>
+                    </small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- My Services -->
+      <% if @services.any? %>
+        <h4 class="mb-3">My Services (<%= @services.count %>)</h4>
+        <% @services.each do |service| %>
+          <%= link_to service_path(service), class: "text-decoration-none" do %>
+            <div class="card listing-card mb-2">
+              <div class="card-body p-3">
+                <h6 class="text-dark mb-0"><%= service.title %></h6>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <!-- My Needs -->
+      <% if @needs.any? %>
+        <h4 class="mb-3 mt-4">My Needs (<%= @needs.count %>)</h4>
+        <% @needs.each do |need| %>
+          <%= link_to need, class: "text-decoration-none" do %>
+            <div class="card listing-card mb-2">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between">
+                  <h6 class="text-dark mb-0"><%= need.title %></h6>
+                  <span class="badge bg-<%= need.status == 'open' ? 'success' : 'secondary' %>"><%= need.status %></span>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -90,6 +90,21 @@
                   <label class="form-label fw-semibold">Your Email</label>
                   <input type="email" name="registrant_email" class="form-control form-control-lg" placeholder="your@email.com" required>
                 </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Password</label>
+                  <input type="password" name="registrant_password" class="form-control form-control-lg" placeholder="Choose a password" required minlength="6">
+                  <small class="text-muted">Minimum 6 characters</small>
+                </div>
+                <div class="col-12">
+                  <div class="form-check mt-2">
+                    <input type="hidden" name="registrant_admin" value="0">
+                    <input type="checkbox" name="registrant_admin" value="1" class="form-check-input" id="registrant_admin" checked>
+                    <label class="form-check-label" for="registrant_admin">
+                      <i class="bi bi-shield-check me-1"></i>Make me a church admin
+                    </label>
+                    <small class="text-muted d-block">Admins can manage church settings and approve new members</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -109,14 +124,21 @@
 
               <% 5.times do |i| %>
                 <div class="row g-3 mb-3 member-row">
-                  <div class="col-md-1 d-flex align-items-center justify-content-center">
+                  <div class="col-1 d-flex align-items-center justify-content-center">
                     <span class="badge bg-secondary rounded-pill"><%= i + 1 %></span>
                   </div>
-                  <div class="col-md-5">
+                  <div class="col-4">
                     <input type="text" name="members[][name]" class="form-control" placeholder="Member name">
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-5">
                     <input type="email" name="members[][email]" class="form-control" placeholder="Member email">
+                  </div>
+                  <div class="col-2 d-flex align-items-center">
+                    <div class="form-check">
+                      <input type="hidden" name="members[][admin]" value="0">
+                      <input type="checkbox" name="members[][admin]" value="1" class="form-check-input" id="member_admin_<%= i %>">
+                      <label class="form-check-label small" for="member_admin_<%= i %>">Admin</label>
+                    </div>
                   </div>
                 </div>
               <% end %>

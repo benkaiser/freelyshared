@@ -1,0 +1,25 @@
+<% content_for :title, "Member Directory - FreelyShared" %>
+
+<div class="container py-4">
+  <h2 class="mb-4"><i class="bi bi-people text-primary me-2"></i>Member Directory</h2>
+
+  <% if @members.any? %>
+    <div class="row g-3">
+      <% @members.each do |member| %>
+        <div class="col-6 col-md-4 col-lg-3">
+          <%= link_to member_path(member), class: "text-decoration-none" do %>
+            <div class="card listing-card h-100 text-center p-3">
+              <img src="<%= member.gravatar_url(80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80" alt="">
+              <h6 class="text-dark mb-0"><%= member.name %></h6>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <i class="bi bi-people d-block"></i>
+      <h4 class="text-muted">No members to show</h4>
+    </div>
+  <% end %>
+</div>

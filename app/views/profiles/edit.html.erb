@@ -1,0 +1,60 @@
+<% content_for :title, "Edit Profile - FreelyShared" %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2 class="mb-4"><i class="bi bi-pencil text-primary me-2"></i>Edit Profile</h2>
+
+      <div class="text-center mb-4">
+        <img src="<%= @member.gravatar_url(80) %>" class="rounded-circle mb-2" width="80" height="80" alt="">
+        <p class="text-muted small">
+          Profile photo uses <a href="https://gravatar.com" target="_blank">Gravatar</a>.
+          Update it there using your email.
+        </p>
+      </div>
+
+      <%= form_with model: @member, url: profile_path, method: :patch, class: "row g-3" do |f| %>
+        <% if @member.errors.any? %>
+          <div class="col-12">
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% @member.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="col-12">
+          <%= f.label :name, class: "form-label fw-semibold" %>
+          <%= f.text_field :name, class: "form-control form-control-lg" %>
+        </div>
+
+        <div class="col-12">
+          <%= f.label :phone, "Phone Number", class: "form-label fw-semibold" %>
+          <%= f.text_field :phone, class: "form-control", placeholder: "Optional — visible to church members" %>
+        </div>
+
+        <div class="col-12">
+          <div class="form-check form-switch">
+            <%= f.check_box :show_email, class: "form-check-input", role: "switch" %>
+            <%= f.label :show_email, "Show my email address to other members", class: "form-check-label" %>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="form-check form-switch">
+            <%= f.check_box :show_in_directory, class: "form-check-input", role: "switch" %>
+            <%= f.label :show_in_directory, "Show me in the member directory", class: "form-check-label" %>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <%= f.submit "Save Profile", class: "btn btn-primary btn-lg" %>
+          <%= link_to "Cancel", profile_path, class: "btn btn-outline-secondary btn-lg ms-2" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

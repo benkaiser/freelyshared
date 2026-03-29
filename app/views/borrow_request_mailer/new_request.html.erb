@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+    .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; }
+    .detail { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+    .footer { text-align: center; padding: 20px; color: #6c757d; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Borrow Request</h1>
+    </div>
+    <div class="content">
+      <p>Hi <%= @owner.name %>,</p>
+      <p><strong><%= @requester.name %></strong> would like to borrow your <strong><%= @item.title %></strong>.</p>
+
+      <div class="detail">
+        <strong>Dates:</strong> <%= @borrow_request.start_date.strftime("%B %d, %Y") %> - <%= @borrow_request.end_date.strftime("%B %d, %Y") %>
+      </div>
+
+      <% if @borrow_request.phone.present? %>
+        <div class="detail">
+          <strong>Contact:</strong> <%= @borrow_request.phone %>
+        </div>
+      <% end %>
+
+      <p>Sign in to FreelyShared to confirm or manage this request.</p>
+    </div>
+    <div class="footer">
+      <p>FreelyShared - Share Freely. Love Generously.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<%= form_with model: item, class: "row g-3" do |f| %>
+  <% if item.errors.any? %>
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:</h5>
+        <ul class="mb-0">
+          <% item.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="col-12">
+    <%= f.label :title, class: "form-label fw-semibold" %>
+    <%= f.text_field :title, class: "form-control form-control-lg", placeholder: "What are you sharing?", required: true %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :description, class: "form-label fw-semibold" %>
+    <%= f.text_area :description, class: "form-control", rows: 4, placeholder: "Describe the item, condition, any instructions..." %>
+  </div>
+
+  <div class="col-md-6">
+    <%= f.label :category, class: "form-label fw-semibold" %>
+    <%= f.select :category, Item::CATEGORIES, {}, class: "form-select" %>
+  </div>
+
+  <div class="col-md-6">
+    <%= f.label :photo, class: "form-label fw-semibold" %>
+    <%= f.file_field :photo, class: "form-control", accept: "image/*" %>
+    <% if item.photo.attached? %>
+      <div class="mt-2">
+        <%= image_tag item.photo_thumbnail, class: "rounded", style: "max-height: 100px;" %>
+        <small class="text-muted d-block">Current photo</small>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-12">
+    <%= f.submit item.persisted? ? "Update Item" : "List Item", class: "btn btn-primary btn-lg" %>
+    <%= link_to "Cancel", items_path, class: "btn btn-outline-secondary btn-lg ms-2" %>
+  </div>
+<% end %>

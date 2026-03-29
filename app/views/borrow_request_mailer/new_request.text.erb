@@ -1,0 +1,13 @@
+Hi <%= @owner.name %>,
+
+<%= @requester.name %> would like to borrow your "<%= @item.title %>".
+
+Dates: <%= @borrow_request.start_date.strftime("%B %d, %Y") %> - <%= @borrow_request.end_date.strftime("%B %d, %Y") %>
+<% if @borrow_request.phone.present? %>
+Contact: <%= @borrow_request.phone %>
+<% end %>
+
+Sign in to FreelyShared to confirm or manage this request.
+
+--
+FreelyShared - Share Freely. Love Generously.

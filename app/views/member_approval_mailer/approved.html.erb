@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #198754, #20c997); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+    .btn { display: inline-block; background: #198754; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; }
+    .footer { text-align: center; margin-top: 20px; color: #6c757d; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>You're In!</h1>
+      <p>Welcome to <%= @church.name %> on FreelyShared</p>
+    </div>
+    <div class="content">
+      <p>Hi <%= @member.name %>,</p>
+      <p>
+        Great news! Your request to join <strong><%= @church.name %></strong> on FreelyShared has been
+        <strong>approved</strong>. You can now sign in and start sharing with your church community.
+      </p>
+      <p style="text-align: center; margin: 30px 0;">
+        <a href="<%= new_church_member_session_url %>" class="btn">Sign In Now</a>
+      </p>
+      <p style="text-align: center; margin: 30px 0;">
+        <em>"All the believers were one in heart and mind. No one claimed that any of their possessions
+        was their own, but they shared everything they had."</em><br>
+        <strong>— Acts 4:32</strong>
+      </p>
+    </div>
+    <div class="footer">
+      <p>FreelyShared — Share Freely. Love Generously.</p>
+    </div>
+  </div>
+</body>
+</html>

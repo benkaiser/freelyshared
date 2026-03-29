@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Freelyshared" %></title>
+    <title><%= content_for(:title) || "FreelyShared" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d6efd">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
   <body class="d-flex flex-column min-vh-100">
-    <!-- Navigation Bar -->
+    <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand d-flex align-items-center text-decoration-none" do %>
@@ -33,15 +32,64 @@
           <span class="fw-bold text-primary fs-4">FreelyShared</span>
         <% end %>
 
-        <!-- Future navigation items can go here -->
+        <% if church_member_signed_in? %>
+          <span class="text-muted d-none d-lg-inline me-3">
+            <i class="bi bi-building me-1"></i><%= current_church&.name %>
+          </span>
+        <% end %>
+
         <div class="navbar-nav ms-auto">
-          <!-- Space for future nav items -->
+          <% if church_member_signed_in? %>
+            <!-- Desktop navigation links -->
+            <div class="d-none d-lg-flex align-items-center">
+              <%= link_to items_path, class: "nav-link #{'active' if controller_name == 'items' && action_name == 'index'}" do %>
+                <i class="bi bi-box-seam me-1"></i> Browse Items
+              <% end %>
+              <%= link_to services_path, class: "nav-link #{'active' if controller_name == 'services_listings'}" do %>
+                <i class="bi bi-tools me-1"></i> Services
+              <% end %>
+              <%= link_to needs_path, class: "nav-link #{'active' if controller_name == 'needs'}" do %>
+                <i class="bi bi-hand-thumbs-up me-1"></i> Needs
+              <% end %>
+              <%= link_to my_listings_path, class: "nav-link #{'active' if request.path == my_listings_path}" do %>
+                <i class="bi bi-list-ul me-1"></i> My Listings
+              <% end %>
+              <%= link_to profile_path, class: "nav-link #{'active' if controller_name == 'profiles'}" do %>
+                <i class="bi bi-person me-1"></i> Profile
+              <% end %>
+              <% if current_church_member&.admin? %>
+                <% pending_count = current_church.church_members.pending_approval.count %>
+                <%= link_to church_admin_path, class: "nav-link #{'active' if controller_name == 'church_admin'}" do %>
+                  <i class="bi bi-shield-check me-1"></i> Admin
+                  <% if pending_count > 0 %>
+                    <span class="badge bg-danger rounded-pill"><%= pending_count %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+            <%= link_to destroy_church_member_session_path, data: { turbo_method: :delete }, class: "btn btn-outline-secondary btn-sm ms-2 d-none d-lg-inline-block" do %>
+              <i class="bi bi-box-arrow-right"></i> Sign out
+            <% end %>
+          <% else %>
+            <%= link_to new_church_member_session_path, class: "btn btn-primary btn-sm" do %>
+              <i class="bi bi-box-arrow-in-right me-1"></i> Sign in
+            <% end %>
+          <% end %>
         </div>
       </div>
     </nav>
 
+    <!-- Church name bar on mobile -->
+    <% if church_member_signed_in? %>
+      <div class="d-lg-none bg-light border-bottom py-1 text-center">
+        <small class="text-muted">
+          <i class="bi bi-building me-1"></i><%= current_church&.name %>
+        </small>
+      </div>
+    <% end %>
+
     <!-- Main Content -->
-    <main class="flex-grow-1">
+    <main class="flex-grow-1 pb-5 pb-lg-0">
       <% if flash[:alert] %>
         <div class="container mt-3">
           <div class="alert alert-danger alert-dismissible fade show">
@@ -61,8 +109,36 @@
       <%= yield %>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-light py-4 mt-auto">
+    <!-- Bottom Tab Navigation (mobile only, authenticated only) -->
+    <% if church_member_signed_in? %>
+      <nav class="d-lg-none fixed-bottom bg-white border-top shadow-lg bottom-nav">
+        <div class="d-flex justify-content-around py-1">
+          <%= link_to items_path, class: "bottom-nav-item #{'active' if controller_name == 'items' && action_name == 'index'}" do %>
+            <i class="bi bi-box-seam"></i>
+            <span>Items</span>
+          <% end %>
+          <%= link_to services_path, class: "bottom-nav-item #{'active' if controller_name == 'services_listings'}" do %>
+            <i class="bi bi-tools"></i>
+            <span>Services</span>
+          <% end %>
+          <%= link_to needs_path, class: "bottom-nav-item #{'active' if controller_name == 'needs'}" do %>
+            <i class="bi bi-hand-thumbs-up"></i>
+            <span>Needs</span>
+          <% end %>
+          <%= link_to my_listings_path, class: "bottom-nav-item #{'active' if request.path == my_listings_path}" do %>
+            <i class="bi bi-list-ul"></i>
+            <span>My Listings</span>
+          <% end %>
+          <%= link_to profile_path, class: "bottom-nav-item #{'active' if controller_name == 'profiles'}" do %>
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+          <% end %>
+        </div>
+      </nav>
+    <% end %>
+
+    <!-- Footer (hidden on mobile when nav is shown) -->
+    <footer class="bg-light py-4 mt-auto <%= 'd-none d-lg-block' if church_member_signed_in? %>">
       <div class="container">
         <div class="row align-items-center">
           <div class="col-md-6">

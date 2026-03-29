@@ -1,0 +1,34 @@
+<%= form_with model: service, url: service.persisted? ? service_path(service) : services_path, class: "row g-3" do |f| %>
+  <% if service.errors.any? %>
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:</h5>
+        <ul class="mb-0">
+          <% service.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="col-12">
+    <%= f.label :title, class: "form-label fw-semibold" %>
+    <%= f.text_field :title, class: "form-control form-control-lg", placeholder: "e.g. Plumbing, Tutoring, Car Repairs...", required: true %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :description, class: "form-label fw-semibold" %>
+    <%= f.text_area :description, class: "form-control", rows: 4, placeholder: "Describe what you can help with, your experience, availability..." %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :contact_preference, "Best way to reach you", class: "form-label fw-semibold" %>
+    <%= f.text_field :contact_preference, class: "form-control", placeholder: "e.g. Call me on 0412 345 678, or chat at church" %>
+  </div>
+
+  <div class="col-12">
+    <%= f.submit service.persisted? ? "Update Service" : "List Service", class: "btn btn-primary btn-lg" %>
+    <%= link_to "Cancel", services_path, class: "btn btn-outline-secondary btn-lg ms-2" %>
+  </div>
+<% end %>

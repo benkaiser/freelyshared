@@ -32,26 +32,37 @@ class ChurchesController < ApplicationController
 
     Church.transaction do
       if @church.save
-        # Add registrant as first member
+        # Add registrant as first member with password
+        password = params[:registrant_password]
+        registrant_admin = params[:registrant_admin] == "1"
         member = @church.church_members.create!(
           name: params[:registrant_name],
           email: params[:registrant_email],
-          is_registrant: true
+          password: password,
+          password_confirmation: password,
+          is_registrant: true,
+          admin: registrant_admin,
+          approval_status: "approved"
         )
 
-        # Add initial members if provided
-        added_count = 1
+        # Add initial members if provided (they get invited, no password yet)
         if params[:members].present?
           params[:members].each do |m|
             next if m[:name].blank? || m[:email].blank?
+            temp_password = SecureRandom.hex(16)
             @church.church_members.create!(
               name: m[:name],
-              email: m[:email]
+              email: m[:email],
+              password: temp_password,
+              password_confirmation: temp_password,
+              admin: m[:admin] == "1",
+              approval_status: "approved"
             )
-            added_count += 1
           end
         end
 
+        # Sign in the registrant
+        sign_in(member)
         redirect_to thankyou_church_path(@church)
       else
         render :new, status: :unprocessable_entity
@@ -66,14 +77,30 @@ class ChurchesController < ApplicationController
     @church = Church.find(params[:id])
     @member = @church.church_members.new(member_params)
 
+    if @church.require_admin_approval?
+      @member.approval_status = "pending"
+    else
+      @member.approval_status = "approved"
+    end
+
     if @member.save
-      redirect_to thankyou_church_path(@church)
+      if @church.require_admin_approval?
+        MemberApprovalMailer.notify_admins(@member).deliver_later
+        redirect_to pending_approval_church_path(@church)
+      else
+        sign_in(@member)
+        redirect_to thankyou_church_path(@church)
+      end
     else
       render :show, status: :unprocessable_entity
     end
   end
 
   def thankyou
+    @church = Church.find(params[:id])
+  end
+
+  def pending_approval
     @church = Church.find(params[:id])
   end
 
@@ -84,6 +111,6 @@ class ChurchesController < ApplicationController
   end
 
   def member_params
-    params.require(:church_member).permit(:name, :email)
+    params.require(:church_member).permit(:name, :email, :password, :password_confirmation)
   end
 end

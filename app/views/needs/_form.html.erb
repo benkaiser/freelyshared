@@ -1,0 +1,41 @@
+<%= form_with model: need, class: "row g-3" do |f| %>
+  <% if need.errors.any? %>
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:</h5>
+        <ul class="mb-0">
+          <% need.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="col-12">
+    <%= f.label :title, class: "form-label fw-semibold" %>
+    <%= f.text_field :title, class: "form-control form-control-lg", placeholder: "e.g. Need help moving this Saturday, Looking for a drop saw...", required: true %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :description, class: "form-label fw-semibold" %>
+    <%= f.text_area :description, class: "form-control", rows: 4, placeholder: "Describe what you need, when, any details..." %>
+  </div>
+
+  <div class="col-12">
+    <%= f.label :contact_info, "How to reach you", class: "form-label fw-semibold" %>
+    <%= f.text_field :contact_info, class: "form-control", placeholder: "e.g. Call/text 0412 345 678, or email me" %>
+    <small class="text-muted">Phone number or email recommended so people can help you</small>
+  </div>
+
+  <div class="col-12">
+    <div class="alert alert-light">
+      <i class="bi bi-clock me-1"></i> Needs auto-expire after 30 days. You can repost or mark as fulfilled anytime.
+    </div>
+  </div>
+
+  <div class="col-12">
+    <%= f.submit need.persisted? ? "Update Need" : "Post Need", class: "btn btn-primary btn-lg" %>
+    <%= link_to "Cancel", needs_path, class: "btn btn-outline-secondary btn-lg ms-2" %>
+  </div>
+<% end %>

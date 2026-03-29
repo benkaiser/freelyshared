@@ -1,0 +1,76 @@
+<% content_for :title, "Borrow Requests - FreelyShared" %>
+
+<div class="container py-4">
+  <h2 class="mb-4"><i class="bi bi-arrow-left-right text-primary me-2"></i>Borrow Requests</h2>
+
+  <!-- Incoming Requests (my items being borrowed) -->
+  <h4 class="mb-3">Incoming Requests</h4>
+  <% if @incoming_requests.any? %>
+    <% @incoming_requests.each do |request| %>
+      <div class="card mb-2">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <strong><%= request.requester.name %></strong> wants to borrow
+              <%= link_to request.item.title, item_path(request.item), class: "fw-semibold" %>
+              <br><small class="text-muted">
+                <%= request.start_date.strftime("%b %d") %> - <%= request.end_date.strftime("%b %d, %Y") %>
+                <% if request.phone.present? %>
+                  | <i class="bi bi-phone"></i> <%= request.phone %>
+                <% end %>
+              </small>
+            </div>
+            <span class="badge bg-<%= request.status == 'confirmed' ? 'success' : request.status == 'pending' ? 'warning' : 'secondary' %>"><%= request.status %></span>
+          </div>
+          <div class="mt-2 d-flex gap-1">
+            <% if request.status == "pending" && !request.owner_confirmed? %>
+              <%= button_to "Confirm", owner_confirm_item_borrow_request_path(request.item, request), method: :patch, class: "btn btn-sm btn-success" %>
+            <% end %>
+            <% if request.status == "confirmed" %>
+              <%= button_to "Mark Returned", mark_returned_item_borrow_request_path(request.item, request), method: :patch, class: "btn btn-sm btn-outline-success" %>
+            <% end %>
+            <% if %w[pending confirmed].include?(request.status) %>
+              <%= button_to "Cancel", cancel_item_borrow_request_path(request.item, request), method: :patch, class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="text-muted mb-4">No incoming borrow requests.</p>
+  <% end %>
+
+  <!-- Outgoing Requests (items I want to borrow) -->
+  <h4 class="mb-3 mt-4">My Requests</h4>
+  <% if @outgoing_requests.any? %>
+    <% @outgoing_requests.each do |request| %>
+      <div class="card mb-2">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <%= link_to request.item.title, item_path(request.item), class: "fw-semibold" %>
+              from <strong><%= request.item.church_member.name %></strong>
+              <br><small class="text-muted">
+                <%= request.start_date.strftime("%b %d") %> - <%= request.end_date.strftime("%b %d, %Y") %>
+              </small>
+            </div>
+            <span class="badge bg-<%= request.status == 'confirmed' ? 'success' : request.status == 'pending' ? 'warning' : 'secondary' %>"><%= request.status %></span>
+          </div>
+          <div class="mt-2 d-flex gap-1">
+            <% if request.status == "pending" && request.owner_confirmed? && !request.borrower_confirmed? %>
+              <%= button_to "Confirm Borrow", borrower_confirm_item_borrow_request_path(request.item, request), method: :patch, class: "btn btn-sm btn-success" %>
+            <% end %>
+            <% if request.status == "confirmed" %>
+              <%= button_to "Mark Returned", mark_returned_item_borrow_request_path(request.item, request), method: :patch, class: "btn btn-sm btn-outline-success" %>
+            <% end %>
+            <% if request.status == "pending" %>
+              <%= button_to "Cancel", cancel_item_borrow_request_path(request.item, request), method: :patch, class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="text-muted">You haven't requested to borrow anything yet.</p>
+  <% end %>
+</div>

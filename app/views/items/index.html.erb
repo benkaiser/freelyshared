@@ -1,0 +1,59 @@
+<% content_for :title, "Browse Items - FreelyShared" %>
+
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-box-seam text-primary me-2"></i>Browse Items</h2>
+    <%= link_to new_item_path, class: "btn btn-primary" do %>
+      <i class="bi bi-plus-lg me-1"></i> List an Item
+    <% end %>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="mb-4">
+    <div class="d-flex flex-wrap gap-2">
+      <%= link_to "All", items_path, class: "btn btn-sm #{params[:category].blank? ? 'btn-primary' : 'btn-outline-secondary'}" %>
+      <% @categories.each do |category| %>
+        <%= link_to category, items_path(category: category), class: "btn btn-sm #{params[:category] == category ? 'btn-primary' : 'btn-outline-secondary'}" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @items.any? %>
+    <div class="row g-3">
+      <% @items.each do |item| %>
+        <div class="col-6 col-md-4 col-lg-3">
+          <%= link_to item, class: "text-decoration-none" do %>
+            <div class="card listing-card h-100">
+              <% if item.photo.attached? %>
+                <%= image_tag item.photo_thumbnail, class: "card-img-top", style: "height: 180px; object-fit: cover;" %>
+              <% else %>
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                  <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                </div>
+              <% end %>
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1 text-dark"><%= item.title %></h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-light text-dark category-badge"><%= item.category %></span>
+                  <small>
+                    <span class="availability-dot <%= item.available? ? 'available' : 'unavailable' %>"></span>
+                    <span class="text-muted"><%= item.available? ? 'Available' : 'Unavailable' %></span>
+                  </small>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <i class="bi bi-box-seam d-block"></i>
+      <h4 class="text-muted">No items yet</h4>
+      <p class="text-muted">Be the first to share something with your church community!</p>
+      <%= link_to new_item_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg me-1"></i> List Your First Item
+      <% end %>
+    </div>
+  <% end %>
+</div>

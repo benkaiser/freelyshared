@@ -1,5 +1,8 @@
 class Church < ApplicationRecord
   has_many :church_members, dependent: :destroy
+  has_many :items, dependent: :destroy
+  has_many :services_listings, dependent: :destroy
+  has_many :needs, dependent: :destroy
 
   validates :name, presence: true, length: { minimum: 1, maximum: 300 }
   validates :location_name, presence: true, length: { minimum: 1, maximum: 300 }
@@ -21,17 +24,21 @@ class Church < ApplicationRecord
   }
 
   def member_count
-    church_members.count
+    church_members.approved.count
   end
 
   def members_needed
     [5 - member_count, 0].max
   end
 
+  def admins
+    church_members.approved.admins
+  end
+
   def check_ready!
     if member_count >= 5 && status == "pending"
       update!(status: "ready", ready_at: Time.current)
-      church_members.each do |member|
+      church_members.approved.each do |member|
         ChurchReadyMailer.notify_member(self, member).deliver_later
       end
     end

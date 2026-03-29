@@ -1,0 +1,162 @@
+<% content_for :title, "#{@item.title} - FreelyShared" %>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to "Items", items_path %></li>
+      <li class="breadcrumb-item active"><%= @item.title %></li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <% if @item.photo.attached? %>
+        <%= image_tag @item.photo_medium, class: "img-fluid rounded shadow-sm", style: "width: 100%; max-height: 400px; object-fit: cover;" %>
+      <% else %>
+        <div class="bg-light rounded d-flex align-items-center justify-content-center shadow-sm" style="height: 300px;">
+          <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-md-6">
+      <div class="d-flex align-items-start justify-content-between mb-2">
+        <h2 class="mb-0"><%= @item.title %></h2>
+        <% if @item.owner?(current_church_member) %>
+          <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><%= link_to "Edit", edit_item_path(@item), class: "dropdown-item" %></li>
+              <li>
+                <%= button_to toggle_availability_item_path(@item), method: :patch, class: "dropdown-item" do %>
+                  Mark as <%= @item.available? ? 'Unavailable' : 'Available' %>
+                <% end %>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= button_to "Delete", @item, method: :delete, class: "dropdown-item text-danger", data: { turbo_confirm: "Are you sure?" } %></li>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mb-3">
+        <span class="badge bg-light text-dark category-badge me-2"><%= @item.category %></span>
+        <span class="badge <%= @item.available? ? 'bg-success' : 'bg-danger' %>">
+          <%= @item.available? ? 'Available' : 'Unavailable' %>
+        </span>
+      </div>
+
+      <% if @item.description.present? %>
+        <p class="text-muted"><%= simple_format(@item.description) %></p>
+      <% end %>
+
+      <div class="card bg-light border-0 mb-3">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center">
+            <img src="<%= @item.church_member.gravatar_url(40) %>" class="rounded-circle me-2" width="40" height="40" alt="">
+            <div>
+              <strong><%= @item.church_member.name %></strong>
+              <% if @item.church_member.phone.present? %>
+                <br><small class="text-muted"><i class="bi bi-phone me-1"></i><%= @item.church_member.phone %></small>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% if @item.available? && !@item.owner?(current_church_member) %>
+        <div class="card border-primary mb-3">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-hand-index me-2"></i>Request to Borrow</h5>
+          </div>
+          <div class="card-body">
+            <%= form_with model: [@item, @borrow_request], class: "row g-3" do |f| %>
+              <div class="col-6">
+                <%= f.label :start_date, "From", class: "form-label" %>
+                <%= f.date_field :start_date, class: "form-control", min: Date.today, required: true %>
+              </div>
+              <div class="col-6">
+                <%= f.label :end_date, "Until", class: "form-label" %>
+                <%= f.date_field :end_date, class: "form-control", min: Date.today, required: true %>
+              </div>
+              <div class="col-12">
+                <%= f.label :phone, "Your Phone Number", class: "form-label" %>
+                <%= f.text_field :phone, class: "form-control", placeholder: "So the owner can reach you", required: true, value: current_church_member.phone %>
+              </div>
+              <div class="col-12">
+                <%= f.submit "Send Request", class: "btn btn-primary w-100" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Borrow Requests (visible to owner) -->
+      <% if @item.owner?(current_church_member) && @item.borrow_requests.active.any? %>
+        <h5 class="mt-4">Borrow Requests</h5>
+        <% @item.borrow_requests.active.includes(:requester).order(created_at: :desc).each do |request| %>
+          <div class="card mb-2">
+            <div class="card-body p-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong><%= request.requester.name %></strong>
+                  <br><small class="text-muted">
+                    <%= request.start_date.strftime("%b %d") %> - <%= request.end_date.strftime("%b %d, %Y") %>
+                  </small>
+                  <% if request.phone.present? %>
+                    <br><small class="text-muted"><i class="bi bi-phone"></i> <%= request.phone %></small>
+                  <% end %>
+                </div>
+                <div>
+                  <span class="badge bg-<%= request.status == 'confirmed' ? 'success' : 'warning' %>"><%= request.status %></span>
+                </div>
+              </div>
+              <div class="mt-2 d-flex gap-1">
+                <% if request.status == "pending" && !request.owner_confirmed? %>
+                  <%= button_to "Confirm", owner_confirm_item_borrow_request_path(@item, request), method: :patch, class: "btn btn-sm btn-success" %>
+                <% end %>
+                <% if request.status == "confirmed" %>
+                  <%= button_to "Mark Returned", mark_returned_item_borrow_request_path(@item, request), method: :patch, class: "btn btn-sm btn-outline-success" %>
+                <% end %>
+                <% if request.status == "pending" || request.status == "confirmed" %>
+                  <%= button_to "Cancel", cancel_item_borrow_request_path(@item, request), method: :patch, class: "btn btn-sm btn-outline-danger" %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+
+      <!-- Borrow request status (visible to requester) -->
+      <% if !@item.owner?(current_church_member) %>
+        <% my_requests = @item.borrow_requests.where(requester: current_church_member).active %>
+        <% if my_requests.any? %>
+          <h5 class="mt-4">Your Requests</h5>
+          <% my_requests.each do |request| %>
+            <div class="card mb-2">
+              <div class="card-body p-3">
+                <small class="text-muted">
+                  <%= request.start_date.strftime("%b %d") %> - <%= request.end_date.strftime("%b %d, %Y") %>
+                </small>
+                <span class="badge bg-<%= request.status == 'confirmed' ? 'success' : 'warning' %> ms-2"><%= request.status %></span>
+                <div class="mt-2 d-flex gap-1">
+                  <% if request.status == "pending" && request.owner_confirmed? && !request.borrower_confirmed? %>
+                    <%= button_to "Confirm Borrow", borrower_confirm_item_borrow_request_path(@item, request), method: :patch, class: "btn btn-sm btn-success" %>
+                  <% end %>
+                  <% if request.status == "confirmed" %>
+                    <%= button_to "Mark Returned", mark_returned_item_borrow_request_path(@item, request), method: :patch, class: "btn btn-sm btn-outline-success" %>
+                  <% end %>
+                  <% if request.status == "pending" %>
+                    <%= button_to "Cancel", cancel_item_borrow_request_path(@item, request), method: :patch, class: "btn btn-sm btn-outline-danger" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

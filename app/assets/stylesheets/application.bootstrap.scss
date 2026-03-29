@@ -310,3 +310,86 @@ html {
   transform: translateY(-2px);
   transition: all 0.3s ease;
 }
+
+// Bottom navigation styles
+.bottom-nav {
+  z-index: 1030;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  color: #6c757d;
+  text-decoration: none;
+  font-size: 0.7rem;
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 1.25rem;
+    margin-bottom: 0.15rem;
+  }
+
+  &.active {
+    color: #0d6efd;
+    font-weight: 600;
+  }
+
+  &:hover {
+    color: #0d6efd;
+  }
+}
+
+// Ensure main content has padding for bottom nav on mobile
+@media (max-width: 991.98px) {
+  .pb-5.pb-lg-0 {
+    padding-bottom: 4.5rem !important;
+  }
+}
+
+// Logged-in page card styles
+.listing-card {
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0,0,0,.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
+  }
+}
+
+.category-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+// Availability badge
+.availability-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+
+  &.available {
+    background-color: #198754;
+  }
+
+  &.unavailable {
+    background-color: #dc3545;
+  }
+}
+
+// Empty state styling
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  i {
+    font-size: 3rem;
+    color: #dee2e6;
+    margin-bottom: 1rem;
+  }
+}

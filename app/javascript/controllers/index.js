@@ -21,3 +21,6 @@ application.register("suburb-autocomplete", SuburbAutocompleteController)
 
 import ChurchSearchController from "./church_search_controller"
 application.register("church-search", ChurchSearchController)
+
+import PushNotificationsController from "./push_notifications_controller"
+application.register("push-notifications", PushNotificationsController)

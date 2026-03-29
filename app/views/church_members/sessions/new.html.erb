@@ -1,0 +1,58 @@
+<% content_for :title, "Sign In - FreelyShared" %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+          <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+          <h2 class="mt-2">Welcome Back</h2>
+          <p class="text-muted">Sign in to your FreelyShared community</p>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "row g-3" }) do |f| %>
+
+              <div class="col-12">
+                <%= f.label :email, class: "form-label fw-semibold" %>
+                <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg", placeholder: "your@email.com" %>
+              </div>
+
+              <div class="col-12">
+                <%= f.label :password, class: "form-label fw-semibold" %>
+                <%= f.password_field :password, autocomplete: "current-password", class: "form-control form-control-lg", placeholder: "Your password" %>
+              </div>
+
+              <% if devise_mapping.rememberable? %>
+                <div class="col-12">
+                  <div class="form-check">
+                    <%= f.check_box :remember_me, class: "form-check-input" %>
+                    <%= f.label :remember_me, class: "form-check-label" %>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="col-12">
+                <%= f.submit "Sign in", class: "btn btn-primary btn-lg w-100" %>
+              </div>
+            <% end %>
+
+            <hr class="my-3">
+            <div class="text-center">
+              <% if devise_mapping.recoverable? && controller_name != 'passwords' %>
+                <%= link_to "Forgot your password?", new_password_path(resource_name), class: "text-muted" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <p class="text-muted">
+            Don't have an account? <%= link_to "Find your church", root_path %> to join.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

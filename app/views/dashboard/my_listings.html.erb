@@ -1,0 +1,94 @@
+<% content_for :title, "My Listings - FreelyShared" %>
+
+<div class="container py-4">
+  <h2 class="mb-4"><i class="bi bi-list-ul text-primary me-2"></i>My Listings</h2>
+
+  <!-- Quick Actions -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <%= link_to new_item_path, class: "btn btn-outline-primary btn-sm" do %>
+      <i class="bi bi-plus-lg me-1"></i> New Item
+    <% end %>
+    <%= link_to new_service_path, class: "btn btn-outline-primary btn-sm" do %>
+      <i class="bi bi-plus-lg me-1"></i> New Service
+    <% end %>
+    <%= link_to new_need_path, class: "btn btn-outline-primary btn-sm" do %>
+      <i class="bi bi-plus-lg me-1"></i> New Need
+    <% end %>
+    <%= link_to my_borrow_requests_path, class: "btn btn-outline-secondary btn-sm" do %>
+      <i class="bi bi-arrow-left-right me-1"></i> Borrow Requests
+    <% end %>
+  </div>
+
+  <!-- Items -->
+  <h4 class="mb-3">Items (<%= @items.count %>)</h4>
+  <% if @items.any? %>
+    <div class="row g-3 mb-4">
+      <% @items.each do |item| %>
+        <div class="col-6 col-md-4 col-lg-3">
+          <%= link_to item, class: "text-decoration-none" do %>
+            <div class="card listing-card h-100">
+              <% if item.photo.attached? %>
+                <%= image_tag item.photo_thumbnail, class: "card-img-top", style: "height: 140px; object-fit: cover;" %>
+              <% else %>
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 140px;">
+                  <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                </div>
+              <% end %>
+              <div class="card-body p-2">
+                <h6 class="card-title mb-1 text-dark"><%= item.title %></h6>
+                <small>
+                  <span class="availability-dot <%= item.available? ? 'available' : 'unavailable' %>"></span>
+                  <span class="text-muted"><%= item.available? ? 'Available' : 'Unavailable' %></span>
+                </small>
+                <% pending_count = item.borrow_requests.pending.count %>
+                <% if pending_count > 0 %>
+                  <br><span class="badge bg-warning text-dark"><%= pending_count %> pending request<%= 's' if pending_count > 1 %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-muted mb-4">No items listed yet.</p>
+  <% end %>
+
+  <!-- Services -->
+  <h4 class="mb-3">Services (<%= @services.count %>)</h4>
+  <% if @services.any? %>
+    <% @services.each do |service| %>
+      <%= link_to service_path(service), class: "text-decoration-none" do %>
+        <div class="card listing-card mb-2">
+          <div class="card-body p-3">
+            <h6 class="text-dark mb-0"><%= service.title %></h6>
+            <% if service.description.present? %>
+              <small class="text-muted"><%= truncate(service.description, length: 80) %></small>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <p class="text-muted mb-4">No services listed yet.</p>
+  <% end %>
+
+  <!-- Needs -->
+  <h4 class="mb-3 mt-4">Needs (<%= @needs.count %>)</h4>
+  <% if @needs.any? %>
+    <% @needs.each do |need| %>
+      <%= link_to need, class: "text-decoration-none" do %>
+        <div class="card listing-card mb-2">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between">
+              <h6 class="text-dark mb-0"><%= need.title %></h6>
+              <span class="badge bg-<%= need.status == 'open' ? 'success' : 'secondary' %>"><%= need.status %></span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  <% else %>
+    <p class="text-muted">No needs posted yet.</p>
+  <% end %>
+</div>
