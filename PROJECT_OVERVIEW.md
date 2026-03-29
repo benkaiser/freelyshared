@@ -20,15 +20,50 @@ Unlike a general-purpose sharing platform, FreelyShared is scoped to **church co
 5. Churches with fewer than 5 members appear in search as "gathering members"
 6. When a church reaches 5 members, all members receive a notification email
 
-### Sharing: Goods & Services
+### Authentication
 
-Once a church is active, members can:
+Email + password authentication via Devise. Users are associated with a church through their ChurchMember record. All authenticated views are scoped to the user's own church.
 
-- **Share goods** — List items they're willing to lend (tools, kitchen appliances, camping gear, books, sports equipment, etc.) and browse what others have available
-- **Offer services** — Share their skills and time with the church family (e.g. "I can help with basic plumbing", "Happy to help someone move", "I can tutor high school maths", "I'll cook meals for families in need")
-- **Request help** — Post needs for either goods or services so others can step in
+### Item Listings & Borrowing
 
-This dual focus on goods *and* services reflects the full picture of the early church — they didn't just share possessions, they served one another with their gifts and abilities.
+- Members list items to lend with a title, description, optional photo, and category
+- Categories: Tools, Kitchen & Home, Garden & Outdoor, Books & Media, Sports & Recreation, Kids & Family, Electronics, Transport, Other
+- Items have manual availability (available/unavailable), toggled by the owner
+- **Borrow flow**: a member requests to borrow with a desired time window and their phone number. The owner gets a push notification + email. Both parties confirm the borrow in-app (dual confirmation). Once confirmed, the item is marked unavailable for that period. The owner can override availability at any time. Items do not auto-return — someone must confirm the return. Multiple people can request the same item simultaneously
+- All communication about the borrow happens off-platform (phone, at church, etc.)
+
+### Services Directory
+
+Persistent listings of skills and professional services members offer to their church (e.g. plumbing, accounting, face painting, tutoring). Unlike Needs, these are standing offers — always visible so people can proactively reach out to someone with the right skills, even if they don't feel comfortable posting a broad request.
+
+### Needs / Requests Board
+
+Members post needs for help or items (e.g. "need help moving Saturday", "looking for a drop saw", "need DIY assistance with a deck"). Needs include a title, description, and contact info (phone or email recommended). Needs auto-expire after 30 days. The poster manages their own status (open / fulfilled).
+
+### Contact & Communication
+
+No in-app messaging. The app is a **bulletin board** — members discover each other through listings, needs, and services, then connect off-platform. Members list their name and optionally their phone number. Email can be shown but is hidden by default. Members can also simply connect at church.
+
+### User Profiles
+
+- Name, optional phone number, optional email visibility
+- Profile photo via Gravatar
+- Toggle to hide from the member directory
+- Profile settings page to manage preferences
+
+### Member Directory
+
+A simple, subtle list of church members (name + Gravatar). Only shows members who haven't opted to be hidden. Accessible from navigation but not prominently featured.
+
+### Notifications
+
+Web Push (VAPID keys, service worker). All opt-in, off by default:
+- New needs posted in your church
+- New service listings in your church
+- New item postings in your church
+- Transactional: someone requests to borrow your item
+
+Toggles available both on a central settings page and contextually on relevant pages.
 
 ### Multi-Campus Note
 
@@ -36,7 +71,7 @@ Churches with multiple campuses are encouraged to group geographically close cam
 
 ## Current Scope
 
-**Only the landing page and signup flow are built.** The actual goods listing, services offering, browsing, and requesting features are not yet implemented. Current functionality:
+**Only the landing page and signup flow are built.** See `beans list` for the full backlog of features to be implemented. Current functionality:
 
 - Landing page with church search
 - Church registration form (with location autocomplete via Photon/Komoot)
@@ -50,12 +85,15 @@ Churches with multiple campuses are encouraged to group geographically close cam
 |-------|--------|-------|
 | **Backend** | Ruby on Rails 8 | Convention over configuration, rapid development |
 | **Database** | PostgreSQL | Single database, Haversine queries for location search |
+| **Auth** | Devise | Email + password authentication |
 | **Frontend JS** | Hotwire (Stimulus + Turbo) | Lightweight, no SPA complexity |
-| **CSS** | Bootstrap 5 + SCSS | Responsive, component library with custom theming |
+| **CSS** | Bootstrap 5 + SCSS | Mobile-first responsive, component library |
 | **JS Bundler** | esbuild | Fast builds |
+| **File Storage** | ActiveStorage + Azure Blob (S3-compatible) | Photo uploads for item listings |
 | **Geocoding** | Photon by Komoot | Free, no API key required |
-| **Background Jobs** | Solid Queue (built into Puma) | For sending emails |
-| **Deployment** | Kamal (Docker-based) | Simple server deployment |
+| **Push Notifications** | Web Push API (VAPID) | PWA with service worker |
+| **Background Jobs** | Solid Queue (built into Puma) | For emails and push notifications |
+| **Deployment** | Dokku | Rails app with local docker-compose for dev |
 
 ## Data Model
 
@@ -65,11 +103,39 @@ Churches with multiple campuses are encouraged to group geographically close cam
 - `latitude`, `longitude` — for geographic search
 - `status` — `pending` (< 5 members) or `ready` (>= 5 members)
 
-### Church Members
-- `name`, `email` — member details
+### Church Members / Users
+- `name`, `email`, `phone` (optional) — member details
 - `church_id` — belongs to a church
 - `is_registrant` — whether this member registered the church
-- `verification_token` — for future email verification
+- `show_email`, `show_in_directory` — visibility preferences
+- Devise fields for authentication
+
+### Item Listings
+- `title`, `description`, `category` — item details
+- Photo via ActiveStorage
+- `available` — boolean, manually toggled
+- `user_id`, `church_id` — ownership and scoping
+
+### Borrow Requests
+- `item_id`, `requester_id` — what and who
+- `start_date`, `end_date` — desired time window
+- `phone` — requester's contact
+- `owner_confirmed`, `borrower_confirmed` — dual confirmation
+- `status` — pending / confirmed / returned / cancelled
+
+### Services
+- `title`, `description` — skill/service offered
+- `user_id`, `church_id` — ownership and scoping
+
+### Needs
+- `title`, `description`, `contact_info` — what's needed and how to reach the poster
+- `status` — open / fulfilled
+- `expires_at` — auto-set to 30 days from creation
+- `user_id`, `church_id` — ownership and scoping
+
+### Push Subscriptions
+- `user_id`, `endpoint`, `keys` — Web Push subscription data
+- Notification preferences (needs, services, items, transactional)
 
 ## Values
 
