@@ -1,0 +1,98 @@
+<% content_for :title, "#{@church.name} - FreelyShared" %>
+
+<section class="hero bg-primary text-white py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 mb-3"><%= @church.name %></h1>
+        <p class="lead mb-2">
+          <i class="bi bi-geo-alt"></i> <%= @church.location_name %>
+        </p>
+
+        <div class="bg-white bg-opacity-10 rounded-4 p-4 mb-4 mt-4">
+          <% if @church.status == "ready" %>
+            <div class="mb-2">
+              <span class="badge bg-success fs-6 px-3 py-2">
+                <i class="bi bi-check-circle me-1"></i> Active Community
+              </span>
+            </div>
+            <p class="display-6 fw-bold mb-1"><%= @church.member_count %></p>
+            <p class="text-white-50 mb-0">members sharing</p>
+          <% else %>
+            <div class="mb-2">
+              <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                <i class="bi bi-hourglass-split me-1"></i> Gathering Members
+              </span>
+            </div>
+            <p class="display-6 fw-bold mb-1"><%= @church.member_count %> / 5</p>
+            <p class="text-white-50 mb-0">
+              <% if @church.members_needed > 0 %>
+                <%= @church.members_needed %> more needed to activate
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <!-- Join Form -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white text-center">
+            <h3 class="card-title mb-0">
+              <i class="bi bi-person-plus me-2"></i>
+              Join <%= @church.name %>
+            </h3>
+          </div>
+          <div class="card-body p-4">
+            <%= form_with model: @member, url: join_church_path(@church), local: true, class: "row g-3" do |form| %>
+
+              <% if @member.errors.any? %>
+                <div class="col-12">
+                  <div class="alert alert-danger">
+                    <h5 class="alert-heading">
+                      <i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:
+                    </h5>
+                    <ul class="mb-0">
+                      <% @member.errors.full_messages.each do |message| %>
+                        <li><%= message %></li>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              <% end %>
+
+              <div class="col-md-6">
+                <%= form.label :name, class: "form-label fw-semibold" %>
+                <%= form.text_field :name, class: "form-control form-control-lg", placeholder: "Your name", required: true %>
+              </div>
+
+              <div class="col-md-6">
+                <%= form.label :email, class: "form-label fw-semibold" %>
+                <%= form.email_field :email, class: "form-control form-control-lg", placeholder: "your@email.com", required: true %>
+              </div>
+
+              <div class="col-12 text-center mt-4">
+                <%= form.submit "Join this church", class: "btn btn-success btn-lg px-5 py-3" %>
+              </div>
+
+              <div class="col-12">
+                <div class="bg-light rounded p-3 mt-3">
+                  <p class="text-muted small text-center mb-0">
+                    <i class="bi bi-shield-check text-success me-1"></i>
+                    We'll never spam you or share your email. You'll be notified when the community is active.
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

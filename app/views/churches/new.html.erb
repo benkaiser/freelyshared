@@ -1,0 +1,139 @@
+<% content_for :title, "Register Your Church - FreelyShared" %>
+
+<section class="hero bg-primary text-white py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-5 mb-3">Register Your Church</h1>
+        <p class="lead">
+          Can't find your church? Register it here and start building your sharing community.
+        </p>
+        <div class="alert alert-info bg-white bg-opacity-10 border-0 text-white">
+          <i class="bi bi-lightbulb me-2"></i>
+          <strong>Tip:</strong> If your church has multiple campuses, we encourage grouping geographically close
+          campuses together to make sharing easier between members.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <%= form_with model: @church, url: churches_path, local: true do |form| %>
+          <% if @church.errors.any? %>
+            <div class="alert alert-danger mb-4">
+              <h5 class="alert-heading">
+                <i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:
+              </h5>
+              <ul class="mb-0">
+                <% @church.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <!-- Church Details -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+              <h4 class="mb-0"><i class="bi bi-building me-2"></i>Church Details</h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="mb-3">
+                <%= form.label :name, "Church Name", class: "form-label fw-semibold" %>
+                <%= form.text_field :name, class: "form-control form-control-lg", placeholder: "e.g. Grace Community Church", required: true %>
+              </div>
+
+              <div class="mb-3"
+                data-controller="suburb-autocomplete"
+                data-action="suburb:selected->suburb-autocomplete#setLocation"
+              >
+                <label class="form-label fw-semibold">Church Location</label>
+                <input
+                  type="text"
+                  class="form-control form-control-lg"
+                  placeholder="Start typing your suburb or city..."
+                  data-suburb-autocomplete-target="input"
+                  data-action="input->suburb-autocomplete#search keydown->suburb-autocomplete#handleKeydown"
+                  autocomplete="off"
+                >
+                <%= form.hidden_field :location_name, id: "church_location_name" %>
+                <%= form.hidden_field :latitude, id: "church_latitude" %>
+                <%= form.hidden_field :longitude, id: "church_longitude" %>
+
+                <div
+                  class="dropdown-menu w-100 shadow-lg"
+                  data-suburb-autocomplete-target="dropdown"
+                  style="max-height: 300px; overflow-y: auto;"
+                ></div>
+                <small class="text-muted mt-1 d-block">Search for the suburb/city where your church meets</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Your Details (Registrant) -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+              <h4 class="mb-0"><i class="bi bi-person-fill me-2"></i>Your Details</h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Your Name</label>
+                  <input type="text" name="registrant_name" class="form-control form-control-lg" placeholder="Your name" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">Your Email</label>
+                  <input type="email" name="registrant_email" class="form-control form-control-lg" placeholder="your@email.com" required>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Initial Members -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+              <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Initial Members <span class="badge bg-white text-info">Optional</span></h4>
+            </div>
+            <div class="card-body p-4">
+              <p class="text-muted mb-4">
+                <i class="bi bi-info-circle me-1"></i>
+                Add 5 members now to <strong>activate your church immediately</strong>.
+                Or skip this step — your church will appear in search results as "gathering members"
+                and will activate once 5 people have joined.
+              </p>
+
+              <% 5.times do |i| %>
+                <div class="row g-3 mb-3 member-row">
+                  <div class="col-md-1 d-flex align-items-center justify-content-center">
+                    <span class="badge bg-secondary rounded-pill"><%= i + 1 %></span>
+                  </div>
+                  <div class="col-md-5">
+                    <input type="text" name="members[][name]" class="form-control" placeholder="Member name">
+                  </div>
+                  <div class="col-md-6">
+                    <input type="email" name="members[][email]" class="form-control" placeholder="Member email">
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg px-5 py-3">
+              <i class="bi bi-check-circle me-2"></i>Register Church
+            </button>
+            <p class="text-muted small mt-3">
+              <i class="bi bi-shield-check text-success me-1"></i>
+              We'll never spam anyone or share email addresses.
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

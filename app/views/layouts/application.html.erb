@@ -42,6 +42,22 @@
 
     <!-- Main Content -->
     <main class="flex-grow-1">
+      <% if flash[:alert] %>
+        <div class="container mt-3">
+          <div class="alert alert-danger alert-dismissible fade show">
+            <%= flash[:alert] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        </div>
+      <% end %>
+      <% if flash[:notice] %>
+        <div class="container mt-3">
+          <div class="alert alert-success alert-dismissible fade show">
+            <%= flash[:notice] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        </div>
+      <% end %>
       <%= yield %>
     </main>
 
@@ -53,7 +69,7 @@
             <div class="d-flex align-items-center">
               <i class="bi bi-people-fill text-primary me-2"></i>
               <span class="text-muted">
-                <strong>FreelyShared</strong> - Building sharing communities
+                <strong>FreelyShared</strong> - Share Freely. Love Generously.
               </span>
             </div>
           </div>

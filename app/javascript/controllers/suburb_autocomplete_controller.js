@@ -205,4 +205,15 @@ export default class extends Controller {
     url.searchParams.set('lng', lng)
     window.location.href = url.toString()
   }
+
+  setLocation(event) {
+    const { suburb, lat, lng } = event.detail
+    // Set hidden fields for church registration form
+    const locationField = document.getElementById('church_location_name')
+    const latField = document.getElementById('church_latitude')
+    const lngField = document.getElementById('church_longitude')
+    if (locationField) locationField.value = suburb
+    if (latField) latField.value = lat
+    if (lngField) lngField.value = lng
+  }
 }

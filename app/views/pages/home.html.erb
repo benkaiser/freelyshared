@@ -1,51 +1,46 @@
-<% content_for :title, "FreelyShared - Community Sharing Platform" %>
+<% content_for :title, "FreelyShared - Share Freely Within Your Church" %>
 
 <!-- Hero Section -->
 <section id="hero-search" class="hero hero-with-image bg-primary text-white py-5">
   <div class="container">
     <div class="row align-items-center min-vh-75">
       <div class="col-lg-6">
-        <h1 class="display-4 fw-bold mb-4">Share. Borrow. Connect.</h1>
+        <h1 class="display-4 fw-bold mb-3">Share Freely.<br>Love Generously.</h1>
         <p class="lead mb-4">
-          Join your local community in a culture of generous sharing. Borrow what you need,
-          lend what you can, and build connections that matter.
+          Connect your church community through the joy of sharing.
+          Lend what you have, borrow what you need — all within your church family.
         </p>
 
-        <!-- Suburb Input with Autocomplete -->
+        <!-- Church Search -->
         <div
           class="position-relative mb-4"
-          data-controller="suburb-autocomplete"
-          data-action="click@document->suburb-autocomplete#clickOutside suburb:selected->suburb-autocomplete#navigateToInterest"
+          data-controller="church-search"
         >
           <div class="form-floating">
             <input
               type="text"
               class="form-control form-control-lg"
-              id="suburb-input"
-              placeholder="Start typing your suburb..."
-              data-suburb-autocomplete-target="input"
-              data-action="input->suburb-autocomplete#search keydown->suburb-autocomplete#handleKeydown focus->suburb-autocomplete#showHint"
+              id="church-input"
+              placeholder="Search for your church..."
+              data-church-search-target="input"
+              data-action="input->church-search#search keydown->church-search#handleKeydown"
               autocomplete="off"
             >
-            <label for="suburb-input" class="text-muted">
-              <i class="bi bi-geo-alt me-2"></i>Enter your suburb to see local interest
+            <label for="church-input" class="text-muted">
+              <i class="bi bi-search me-2"></i>Find your church
             </label>
           </div>
 
-          <!-- Hidden fields for lat/lng -->
-          <input type="hidden" data-suburb-autocomplete-target="hiddenLat">
-          <input type="hidden" data-suburb-autocomplete-target="hiddenLng">
-
-          <!-- Autocomplete Dropdown -->
+          <!-- Search Results Dropdown -->
           <div
             class="dropdown-menu w-100 shadow-lg"
-            data-suburb-autocomplete-target="dropdown"
-            style="max-height: 300px; overflow-y: auto;"
+            data-church-search-target="dropdown"
+            style="max-height: 400px; overflow-y: auto;"
           ></div>
         </div>
 
-        <p class="text-white-50">
-          <small><i class="bi bi-info-circle"></i> Start typing to search, then click a location to explore</small>
+        <p class="text-white-50 mb-0">
+          <small><i class="bi bi-info-circle"></i> Search for your church, or <a href="<%= new_church_path %>" class="text-white">register it</a> if you can't find it</small>
         </p>
       </div>
 
@@ -72,7 +67,7 @@
     <div class="row">
       <div class="col-12 text-center mb-5">
         <h2 class="h1 fw-bold text-dark">How FreelyShared Works</h2>
-        <p class="lead text-muted">Simple, safe, and community-focused</p>
+        <p class="lead text-muted">Sharing made simple for your church community</p>
       </div>
     </div>
 
@@ -81,12 +76,12 @@
         <div class="step-card h-100">
           <div class="step-icon mb-3">
             <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-              <i class="bi bi-plus-circle-fill" style="font-size: 2rem;"></i>
+              <i class="bi bi-search" style="font-size: 2rem;"></i>
             </div>
           </div>
-          <h3 class="h4 fw-bold">1. List Items</h3>
+          <h3 class="h4 fw-bold">1. Find Your Church</h3>
           <p class="text-muted">
-            Share items you're happy to lend - from tools and books to sports equipment and more.
+            Search for your church community. If it's not listed yet, register it and invite your members.
           </p>
         </div>
       </div>
@@ -95,12 +90,12 @@
         <div class="step-card h-100">
           <div class="step-icon mb-3">
             <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-              <i class="bi bi-geo-alt-fill" style="font-size: 2rem;"></i>
+              <i class="bi bi-person-plus-fill" style="font-size: 2rem;"></i>
             </div>
           </div>
-          <h3 class="h4 fw-bold">2. Browse Nearby</h3>
+          <h3 class="h4 fw-bold">2. Gather Your People</h3>
           <p class="text-muted">
-            Discover what's available in your neighborhood from trusted community members.
+            Get 5 members signed up to activate your church's sharing community. The more the merrier!
           </p>
         </div>
       </div>
@@ -112,9 +107,9 @@
               <i class="bi bi-gift" style="font-size: 2rem;"></i>
             </div>
           </div>
-          <h3 class="h4 fw-bold">3. Borrow for Free</h3>
+          <h3 class="h4 fw-bold">3. Share Freely</h3>
           <p class="text-muted">
-            Connect safely, arrange pickup, and enjoy using what you need without the cost of buying.
+            Once activated, list items to share, browse what's available, and borrow from your church family.
           </p>
         </div>
       </div>
@@ -127,8 +122,8 @@
   <div class="container">
     <div class="row">
       <div class="col-12 text-center mb-5">
-        <h2 class="h1 fw-bold text-dark">Built on Community Values</h2>
-        <p class="lead text-muted">More than just borrowing - it's about building a better community together</p>
+        <h2 class="h1 fw-bold text-dark">Built on Biblical Values</h2>
+        <p class="lead text-muted">Inspired by the early church's example of radical generosity</p>
       </div>
     </div>
 
@@ -140,27 +135,11 @@
             <h3 class="h4 fw-bold mb-0">Generosity</h3>
           </div>
           <p class="text-muted mb-3">
-            Share freely with your neighbors. When you lend, you're building a culture of generosity that
-            benefits everyone in your community.
+            Share freely with your brothers and sisters. When you lend, you reflect the generous heart of God
+            and strengthen your church community.
           </p>
           <div class="small text-muted">
-            <i class="bi bi-gift"></i> Optional charity donations let borrowers say thanks while supporting causes that matter
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-4">
-        <div class="value-card h-100">
-          <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-recycle text-success me-3" style="font-size: 2rem;"></i>
-            <h3 class="h4 fw-bold mb-0">Sustainability</h3>
-          </div>
-          <p class="text-muted mb-3">
-            Reduce consumption by sharing existing resources. Every item borrowed is one less item that needs
-            to be manufactured, packaged, and shipped.
-          </p>
-          <div class="small text-muted">
-            <i class="bi bi-leaf"></i> Small actions that add up to a big environmental impact
+            <i class="bi bi-book"></i> "Give, and it will be given to you" — Luke 6:38
           </div>
         </div>
       </div>
@@ -169,61 +148,31 @@
         <div class="value-card h-100">
           <div class="d-flex align-items-center mb-3">
             <i class="bi bi-people-fill text-primary me-3" style="font-size: 2rem;"></i>
-            <h3 class="h4 fw-bold mb-0">Community</h3>
+            <h3 class="h4 fw-bold mb-0">Fellowship</h3>
           </div>
           <p class="text-muted mb-3">
-            Strengthen local connections through sharing. Meet your neighbors, build trust, and create
-            a network of mutual support in your area.
+            Sharing creates connection. Every exchange is an opportunity to deepen relationships
+            and practice the "one another" commands of Scripture.
           </p>
           <div class="small text-muted">
-            <i class="bi bi-shield-check"></i> Safe exchanges with community-driven trust and reputation
+            <i class="bi bi-book"></i> "Carry each other's burdens" — Galatians 6:2
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- Features Preview Section -->
-<section class="features py-5 bg-light">
-  <div class="container">
-    <div class="row">
-      <div class="col-12 text-center mb-5">
-        <h2 class="h1 fw-bold text-dark">Platform Features</h2>
-        <p class="lead text-muted">Designed for safe, easy, and meaningful sharing</p>
-      </div>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card h-100">
-          <i class="bi bi-arrow-left-right text-primary mb-3" style="font-size: 3rem;"></i>
-          <h4 class="fw-bold">Peer-to-Peer Borrowing</h4>
-          <p class="text-muted small">Direct connections between community members</p>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card h-100">
-          <i class="bi bi-star-fill text-warning mb-3" style="font-size: 3rem;"></i>
-          <h4 class="fw-bold">Trust System</h4>
-          <p class="text-muted small">Community-driven ratings and reputation building</p>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card h-100">
-          <i class="bi bi-incognito text-info mb-3" style="font-size: 3rem;"></i>
-          <h4 class="fw-bold">Privacy First</h4>
-          <p class="text-muted small">Pseudonymous profiles protect your personal information</p>
-        </div>
-      </div>
-
-      <div class="col-md-6 col-lg-3">
-        <div class="feature-card h-100">
-          <i class="bi bi-shield-fill-check text-success mb-3" style="font-size: 3rem;"></i>
-          <h4 class="fw-bold">Safe Exchanges</h4>
-          <p class="text-muted small">Optional collateral system for valuable items</p>
+      <div class="col-lg-4">
+        <div class="value-card h-100">
+          <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-hand-thumbs-up-fill text-success me-3" style="font-size: 2rem;"></i>
+            <h3 class="h4 fw-bold mb-0">Stewardship</h3>
+          </div>
+          <p class="text-muted mb-3">
+            Be good stewards of what God has given. Sharing maximizes the usefulness of every
+            resource and reduces waste in our communities.
+          </p>
+          <div class="small text-muted">
+            <i class="bi bi-book"></i> "Each of you should use whatever gift you have received to serve others" — 1 Peter 4:10
+          </div>
         </div>
       </div>
     </div>
@@ -235,38 +184,34 @@
   <div class="container">
     <div class="row justify-content-center text-center">
       <div class="col-lg-8">
-        <h2 class="h1 fw-bold mb-4">Ready to Build Community?</h2>
+        <h2 class="h1 fw-bold mb-4">Ready to Share Freely?</h2>
         <p class="lead mb-4">
-          The stronger our local communities, the sooner we can launch.
-          Start by finding others in your area who share the vision of generous community sharing.
+          Join churches across the country who are rediscovering the joy of generous sharing.
+          Find your church or register it today.
         </p>
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center gap-3">
           <button
             class="btn btn-success btn-lg"
-            onclick="document.getElementById('suburb-input').scrollIntoView({behavior: 'smooth'}); setTimeout(() => document.getElementById('suburb-input').focus(), 500);"
+            onclick="document.getElementById('church-input').scrollIntoView({behavior: 'smooth'}); setTimeout(() => document.getElementById('church-input').focus(), 500);"
           >
-            <i class="bi bi-geo-alt-fill"></i> Find Your Community
+            <i class="bi bi-search"></i> Find Your Church
           </button>
+          <a href="<%= new_church_path %>" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-plus-circle"></i> Register Your Church
+          </a>
         </div>
 
-        <p class="mt-4 text-white-50">
-          <small>
-            <i class="bi bi-people"></i>
-            Join the waitlist to see local interest and help us prioritize your area for launch
-          </small>
-        </p>
-
-        <!-- Community Values Statement -->
+        <!-- Acts 4:32 Quote -->
         <div class="mt-5 p-4 bg-white bg-opacity-10 rounded">
-          <p class="mb-0 small">
-            <i class="bi bi-quote"></i>
-            <em>
+          <p class="mb-0">
+            <i class="bi bi-quote" style="font-size: 1.5rem;"></i>
+            <em class="fs-5">
               "All the believers were one in heart and mind. No one claimed that any of their possessions
               was their own, but they shared everything they had."
             </em>
             <br>
-            <small class="text-white-75">- Acts 4:32, inspiring our vision of community sharing</small>
+            <strong class="text-white-75 mt-2 d-inline-block">— Acts 4:32</strong>
           </p>
         </div>
       </div>

@@ -18,3 +18,6 @@ application.register("signup-map", SignupMapController)
 
 import SuburbAutocompleteController from "./suburb_autocomplete_controller"
 application.register("suburb-autocomplete", SuburbAutocompleteController)
+
+import ChurchSearchController from "./church_search_controller"
+application.register("church-search", ChurchSearchController)
