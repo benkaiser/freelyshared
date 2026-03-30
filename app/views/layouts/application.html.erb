@@ -6,6 +6,23 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0d6efd">
+
+    <% og_title = content_for(:title).presence || "FreelyShared - Share Freely Within Your Church" %>
+    <% og_description = content_for(:og_description).presence || "Connect your church community through sharing. Lend what you have, borrow what you need, and offer your skills to serve — all within your church family." %>
+    <% og_image = content_for(:og_image).presence || "#{request.base_url}/og-image.png" %>
+
+    <meta name="description" content="<%= og_description %>">
+    <meta property="og:title" content="<%= og_title %>">
+    <meta property="og:description" content="<%= og_description %>">
+    <meta property="og:image" content="<%= og_image %>">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="FreelyShared">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= og_title %>">
+    <meta name="twitter:description" content="<%= og_description %>">
+    <meta name="twitter:image" content="<%= og_image %>">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
