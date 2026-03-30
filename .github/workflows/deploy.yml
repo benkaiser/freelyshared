@@ -16,7 +16,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: dokku/github-action@master
-        with:
-          git_remote_url: 'ssh://dokku@kaiser.lol/freelyshared'
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Build Docker image
+        run: docker build -t freelyshared:latest .
+
+      - name: Save Docker image
+        run: docker save freelyshared:latest | gzip > /tmp/freelyshared.tar.gz
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H kaiser.lol >> ~/.ssh/known_hosts
+
+      - name: Upload and deploy image to Dokku
+        run: |
+          scp -i ~/.ssh/deploy_key /tmp/freelyshared.tar.gz root@kaiser.lol:/tmp/freelyshared.tar.gz
+          ssh -i ~/.ssh/deploy_key root@kaiser.lol "docker load < /tmp/freelyshared.tar.gz && docker tag freelyshared:latest dokku/freelyshared:latest && dokku tags:deploy freelyshared latest && rm /tmp/freelyshared.tar.gz"
