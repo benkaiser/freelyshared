@@ -41,9 +41,9 @@ RUN ARCH=$(dpkg --print-architecture | sed 's/amd64/x64/' | sed 's/arm64/arm64/'
     npm install -g yarn && \
     node --version && yarn --version
 
-# Install application gems
+# Install application gems (single-threaded to reduce memory usage on small servers)
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN MAKE="make -j1" bundle install --jobs=1 && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
