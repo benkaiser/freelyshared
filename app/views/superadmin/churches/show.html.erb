@@ -26,7 +26,7 @@
 
 <!-- Stats -->
 <div class="row g-3 mb-4">
-  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @members.approved.count %></h4><small class="text-muted">Members</small></div></div></div>
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @memberships.count %></h4><small class="text-muted">Members</small></div></div></div>
   <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @items_count %></h4><small class="text-muted">Items</small></div></div></div>
   <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @services_count %></h4><small class="text-muted">Services</small></div></div></div>
   <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @needs_count %></h4><small class="text-muted">Needs</small></div></div></div>
@@ -39,6 +39,11 @@
   <div class="card-header"><h5 class="mb-0"><i class="bi bi-gear me-2"></i>Settings</h5></div>
   <div class="card-body">
     <%= form_with url: update_settings_superadmin_church_path(@church), method: :patch, local: true do %>
+      <div class="mb-3">
+        <label for="church_name" class="form-label"><strong>Church Name</strong></label>
+        <input type="text" name="church_name" id="church_name" class="form-control" value="<%= @church.name %>" required>
+      </div>
+      <%= render "shared/location_autocomplete", church: @church %>
       <div class="form-check form-switch">
         <input type="hidden" name="require_admin_approval" value="0">
         <input type="checkbox" name="require_admin_approval" value="1" class="form-check-input" id="require_admin_approval" <%= "checked" if @church.require_admin_approval? %>>
@@ -50,18 +55,19 @@
 </div>
 
 <!-- Pending Members -->
-<% if @pending_members.any? %>
+<% if @pending_memberships.any? %>
 <div class="card shadow-sm mb-4">
   <div class="card-header bg-warning text-dark">
-    <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Pending Members (<%= @pending_members.count %>)</h5>
+    <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Pending Members (<%= @pending_memberships.count %>)</h5>
   </div>
   <div class="card-body p-0">
     <div class="list-group list-group-flush">
-      <% @pending_members.each do |member| %>
+      <% @pending_memberships.each do |membership| %>
+        <% member = membership.church_member %>
         <div class="list-group-item d-flex justify-content-between align-items-center">
           <div>
             <strong><%= link_to member.name, superadmin_user_path(member), class: "text-decoration-none" %></strong>
-            <br><small class="text-muted"><%= member.email %> &middot; <%= time_ago_in_words(member.created_at) %> ago</small>
+            <br><small class="text-muted"><%= member.email %> &middot; <%= time_ago_in_words(membership.created_at) %> ago</small>
           </div>
           <%= button_to "Approve", approve_member_superadmin_church_path(@church, member_id: member.id), method: :post, class: "btn btn-success btn-sm" %>
         </div>
@@ -74,21 +80,22 @@
 <!-- Members -->
 <div class="card shadow-sm mb-4">
   <div class="card-header bg-primary text-white">
-    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Members (<%= @members.approved.count %>)</h5>
+    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Members (<%= @memberships.count %>)</h5>
   </div>
   <div class="card-body p-0">
     <div class="list-group list-group-flush">
-      <% @members.approved.each do |member| %>
+      <% @memberships.each do |membership| %>
+        <% member = membership.church_member %>
         <div class="list-group-item d-flex justify-content-between align-items-center">
           <div>
             <strong><%= link_to member.name, superadmin_user_path(member), class: "text-decoration-none" %></strong>
-            <% if member.admin? %><span class="badge bg-primary ms-1">Admin</span><% end %>
+            <% if membership.admin? %><span class="badge bg-primary ms-1">Admin</span><% end %>
             <% if member.superadmin? %><span class="badge bg-dark ms-1">Superadmin</span><% end %>
             <% if member.suspended? %><span class="badge bg-danger ms-1">Suspended</span><% end %>
             <br><small class="text-muted"><%= member.email %></small>
           </div>
           <div class="d-flex gap-1">
-            <% if member.admin? %>
+            <% if membership.admin? %>
               <%= button_to demote_admin_superadmin_church_path(@church, member_id: member.id), method: :post, class: "btn btn-outline-warning btn-sm" do %>
                 <i class="bi bi-shield-x"></i> Demote
               <% end %>

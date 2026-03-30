@@ -14,7 +14,7 @@ class Item < ApplicationRecord
   ].freeze
 
   belongs_to :church_member
-  belongs_to :church
+  belongs_to :church, optional: true
   has_many :borrow_requests, dependent: :destroy
 
   validates :title, presence: true, length: { maximum: 200 }

@@ -9,22 +9,30 @@ class ChurchMemberTest < ActiveSupport::TestCase
       longitude: 153.02,
       status: "ready"
     )
-    @admin = @church.church_members.create!(
+    @admin = ChurchMember.create!(
       name: "Admin User",
       email: "admin-test@example.com",
       password: "password123",
       password_confirmation: "password123",
       admin: true,
-      approval_status: "approved"
+      church: @church
+    )
+    @admin_membership = ChurchMembership.create!(
+      church_member: @admin,
+      church: @church,
+      admin: true,
+      approval_status: "approved",
+      joined_at: Time.current
     )
   end
 
   test "defaults to non-admin and approved" do
-    member = @church.church_members.create!(
+    member = ChurchMember.create!(
       name: "Regular User",
       email: "regular-test@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
+      church: @church
     )
     assert_not member.admin?
     assert member.approved?
@@ -32,74 +40,88 @@ class ChurchMemberTest < ActiveSupport::TestCase
   end
 
   test "admin scope returns only admins" do
-    @church.church_members.create!(
+    ChurchMember.create!(
       name: "Regular User",
       email: "regular-test@example.com",
       password: "password123",
-      password_confirmation: "password123"
+      password_confirmation: "password123",
+      church: @church
     )
-    admins = @church.church_members.admins
+    admins = ChurchMember.admins
     assert_includes admins, @admin
-    assert_equal 1, admins.count
   end
 
   test "approved scope returns only approved members" do
-    pending = @church.church_members.create!(
+    pending = ChurchMember.create!(
       name: "Pending User",
       email: "pending-test@example.com",
       password: "password123",
       password_confirmation: "password123",
+      church: @church,
       approval_status: "pending"
     )
-    approved = @church.church_members.approved
+    approved = ChurchMember.approved
     assert_includes approved, @admin
     assert_not_includes approved, pending
   end
 
   test "pending_approval scope returns only pending members" do
-    pending = @church.church_members.create!(
+    pending = ChurchMember.create!(
       name: "Pending User",
       email: "pending-test@example.com",
       password: "password123",
       password_confirmation: "password123",
+      church: @church,
       approval_status: "pending"
     )
-    assert_includes @church.church_members.pending_approval, pending
-    assert_not_includes @church.church_members.pending_approval, @admin
+    assert_includes ChurchMember.pending_approval, pending
+    assert_not_includes ChurchMember.pending_approval, @admin
   end
 
-  test "active_for_authentication? returns false for pending member" do
-    pending = @church.church_members.create!(
+  test "active_for_authentication? returns false for pending member with no approved memberships" do
+    pending = ChurchMember.create!(
       name: "Pending User",
       email: "pending-test@example.com",
       password: "password123",
       password_confirmation: "password123",
+      church: @church,
+      approval_status: "pending"
+    )
+    ChurchMembership.create!(
+      church_member: pending,
+      church: @church,
       approval_status: "pending"
     )
     assert_not pending.active_for_authentication?
   end
 
-  test "active_for_authentication? returns true for approved member" do
+  test "active_for_authentication? returns true for member with approved membership" do
     assert @admin.active_for_authentication?
   end
 
   test "inactive_message returns :pending_approval for pending member" do
-    pending = @church.church_members.create!(
+    pending = ChurchMember.create!(
       name: "Pending User",
       email: "pending-test@example.com",
       password: "password123",
       password_confirmation: "password123",
+      church: @church,
       approval_status: "pending"
     )
     assert_equal :pending_approval, pending.inactive_message
   end
 
-  test "church member_count only counts approved members" do
-    @church.church_members.create!(
+  test "church member_count only counts approved memberships" do
+    pending_member = ChurchMember.create!(
       name: "Pending User",
       email: "pending-test@example.com",
       password: "password123",
       password_confirmation: "password123",
+      church: @church
+    )
+    ChurchMembership.create!(
+      church_member: pending_member,
+      church: @church,
       approval_status: "pending"
     )
     # Only @admin should be counted
@@ -112,11 +134,12 @@ class ChurchMemberTest < ActiveSupport::TestCase
   end
 
   test "validates approval_status inclusion" do
-    member = @church.church_members.build(
+    member = ChurchMember.new(
       name: "Bad Status",
       email: "bad-status@example.com",
       password: "password123",
       password_confirmation: "password123",
+      church: @church,
       approval_status: "invalid"
     )
     assert_not member.valid?

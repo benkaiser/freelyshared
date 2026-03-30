@@ -76,6 +76,7 @@
           </div>
 
           <!-- Your Details (Registrant) -->
+          <% unless church_member_signed_in? %>
           <div class="card shadow-sm mb-4">
             <div class="card-header bg-success text-white">
               <h4 class="mb-0"><i class="bi bi-person-fill me-2"></i>Your Details</h4>
@@ -108,8 +109,27 @@
               </div>
             </div>
           </div>
+          <% else %>
+          <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+              <h4 class="mb-0"><i class="bi bi-person-fill me-2"></i>Your Details</h4>
+            </div>
+            <div class="card-body p-4">
+              <p class="mb-2">Registering as <strong><%= current_church_member.name %></strong> (<%= current_church_member.email %>)</p>
+              <div class="form-check mt-2">
+                <input type="hidden" name="registrant_admin" value="0">
+                <input type="checkbox" name="registrant_admin" value="1" class="form-check-input" id="registrant_admin" checked>
+                <label class="form-check-label" for="registrant_admin">
+                  <i class="bi bi-shield-check me-1"></i>Make me a church admin
+                </label>
+                <small class="text-muted d-block">Admins can manage church settings and approve new members</small>
+              </div>
+            </div>
+          </div>
+          <% end %>
 
           <!-- Initial Members -->
+          <% unless church_member_signed_in? %>
           <div class="card shadow-sm mb-4">
             <div class="card-header bg-info text-white">
               <h4 class="mb-0"><i class="bi bi-people-fill me-2"></i>Initial Members <span class="badge bg-white text-info">Optional</span></h4>
@@ -144,6 +164,7 @@
               <% end %>
             </div>
           </div>
+          <% end %>
 
           <!-- Submit -->
           <div class="text-center">

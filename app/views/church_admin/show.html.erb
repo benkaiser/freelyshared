@@ -14,6 +14,11 @@
         </div>
         <div class="card-body">
           <%= form_with url: update_settings_church_admin_path, method: :patch, local: true do %>
+            <div class="mb-3">
+              <label for="church_name" class="form-label"><strong>Church Name</strong></label>
+              <input type="text" name="church_name" id="church_name" class="form-control" value="<%= @church.name %>" required>
+            </div>
+            <%= render "shared/location_autocomplete", church: @church %>
             <div class="form-check form-switch">
               <input type="hidden" name="require_admin_approval" value="0">
               <input type="checkbox" name="require_admin_approval" value="1"
@@ -38,15 +43,16 @@
         <div class="card-header bg-warning text-dark">
           <h5 class="mb-0">
             <i class="bi bi-hourglass-split me-2"></i>Pending Requests
-            <% if @pending_members.any? %>
-              <span class="badge bg-danger ms-2"><%= @pending_members.count %></span>
+            <% if @pending_memberships.any? %>
+              <span class="badge bg-danger ms-2"><%= @pending_memberships.count %></span>
             <% end %>
           </h5>
         </div>
         <div class="card-body">
-          <% if @pending_members.any? %>
+          <% if @pending_memberships.any? %>
             <div class="list-group list-group-flush">
-              <% @pending_members.each do |member| %>
+              <% @pending_memberships.each do |membership| %>
+                <% member = membership.church_member %>
                 <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                   <div>
                     <div class="d-flex align-items-center">
@@ -54,7 +60,7 @@
                       <div>
                         <strong><%= member.name %></strong>
                         <br><small class="text-muted"><%= member.email %></small>
-                        <br><small class="text-muted">Requested <%= time_ago_in_words(member.created_at) %> ago</small>
+                        <br><small class="text-muted">Requested <%= time_ago_in_words(membership.created_at) %> ago</small>
                       </div>
                     </div>
                   </div>
@@ -83,17 +89,18 @@
       <!-- All Members -->
       <div class="card shadow-sm">
         <div class="card-header bg-success text-white">
-          <h5 class="mb-0"><i class="bi bi-people me-2"></i>Members (<%= @all_members.count %>)</h5>
+          <h5 class="mb-0"><i class="bi bi-people me-2"></i>Members (<%= @approved_memberships.count %>)</h5>
         </div>
         <div class="card-body">
           <div class="list-group list-group-flush">
-            <% @all_members.each do |member| %>
+            <% @approved_memberships.each do |membership| %>
+              <% member = membership.church_member %>
               <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                 <div class="d-flex align-items-center">
                   <img src="<%= member.avatar_url(32) %>" class="rounded-circle me-2" width="32" height="32" alt="">
                   <div>
                     <strong><%= member.name %></strong>
-                    <% if member.admin? %>
+                    <% if membership.admin? %>
                       <span class="badge bg-primary ms-1">Admin</span>
                     <% end %>
                     <br><small class="text-muted"><%= member.email %></small>
@@ -105,7 +112,7 @@
                   <% else %>
                     <%= button_to toggle_admin_church_admin_path(member_id: member.id),
                           method: :post, class: "btn btn-outline-primary btn-sm" do %>
-                      <% if member.admin? %>
+                      <% if membership.admin? %>
                         <i class="bi bi-shield-x me-1"></i>Remove Admin
                       <% else %>
                         <i class="bi bi-shield-plus me-1"></i>Make Admin

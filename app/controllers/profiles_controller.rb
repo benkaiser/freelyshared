@@ -6,6 +6,11 @@ class ProfilesController < ApplicationController
     @items = @member.items.order(created_at: :desc)
     @services = @member.services_listings.order(created_at: :desc)
     @needs = @member.needs.order(created_at: :desc)
+    @incoming_pending = BorrowRequest.pending
+      .joins(:item)
+      .includes(:requester, item: :church_member)
+      .where(items: { church_member_id: @member.id })
+      .order(created_at: :desc)
   end
 
   def edit

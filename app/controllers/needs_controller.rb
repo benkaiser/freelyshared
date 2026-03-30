@@ -4,7 +4,7 @@ class NeedsController < ApplicationController
   before_action :authorize_owner!, only: [ :edit, :update, :destroy, :fulfill, :reopen ]
 
   def index
-    @needs = current_church.needs.open_needs.includes(:church_member).order(created_at: :desc)
+    @needs = current_church.visible_needs.open_needs.includes(:church_member).order(created_at: :desc)
   end
 
   def show
@@ -16,7 +16,6 @@ class NeedsController < ApplicationController
 
   def create
     @need = current_church_member.needs.build(need_params)
-    @need.church = current_church
 
     if @need.save
       NotificationService.notify_new_need(@need)
@@ -55,7 +54,7 @@ class NeedsController < ApplicationController
   private
 
   def set_need
-    @need = current_church.needs.find(params[:id])
+    @need = current_church.visible_needs.find(params[:id])
   end
 
   def authorize_owner!

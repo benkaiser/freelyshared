@@ -2,7 +2,7 @@ class Need < ApplicationRecord
   STATUSES = %w[open fulfilled].freeze
 
   belongs_to :church_member
-  belongs_to :church
+  belongs_to :church, optional: true
 
   validates :title, presence: true, length: { maximum: 200 }
   validates :description, length: { maximum: 2000 }

@@ -10,7 +10,7 @@
 puts "Item categories available: #{Item::CATEGORIES.join(', ')}"
 
 # Development seed data
-if Rails.env.development?
+if Rails.env.development? || ENV["SEED_DEMO_DATA"] == "1"
   puts "Seeding development data..."
 
   # Create a test church with members
@@ -59,6 +59,13 @@ if Rails.env.development?
     member.save!
     members << member
 
+    # Create church_membership if it doesn't exist
+    ChurchMembership.find_or_create_by!(church_member: member, church: church) do |cm|
+      cm.admin = is_admin
+      cm.approval_status = "approved"
+      cm.joined_at = member.created_at
+    end
+
     avatar_file = member_avatars[member.email]
     if avatar_file && !member.photo.attached?
       avatar_path = seed_images_dir.join(avatar_file)
@@ -84,6 +91,11 @@ if Rails.env.development?
     approval_status: "pending"
   )
   pending_member.save!
+
+  ChurchMembership.find_or_create_by!(church_member: pending_member, church: church) do |cm|
+    cm.approval_status = "pending"
+    cm.joined_at = pending_member.created_at
+  end
 
   puts "Created #{members.count} approved members + 1 pending member."
   puts "Admin: john@example.com / password123"

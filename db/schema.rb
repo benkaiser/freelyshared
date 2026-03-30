@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_30_100003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,7 +60,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
   end
 
   create_table "church_members", force: :cascade do |t|
-    t.bigint "church_id", null: false
+    t.bigint "church_id"
     t.string "name", null: false
     t.string "email", default: "", null: false
     t.boolean "email_verified", default: false
@@ -86,6 +86,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
     t.index ["email"], name: "index_church_members_on_email", unique: true
     t.index ["reset_password_token"], name: "index_church_members_on_reset_password_token", unique: true
     t.index ["verification_token"], name: "index_church_members_on_verification_token"
+  end
+
+  create_table "church_memberships", force: :cascade do |t|
+    t.bigint "church_member_id", null: false
+    t.bigint "church_id", null: false
+    t.boolean "admin", default: false, null: false
+    t.string "approval_status", default: "approved", null: false
+    t.boolean "is_registrant", default: false, null: false
+    t.datetime "joined_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["church_id", "approval_status"], name: "index_church_memberships_on_church_id_and_approval_status"
+    t.index ["church_id"], name: "index_church_memberships_on_church_id"
+    t.index ["church_member_id", "church_id"], name: "index_church_memberships_on_church_member_id_and_church_id", unique: true
+    t.index ["church_member_id"], name: "index_church_memberships_on_church_member_id"
   end
 
   create_table "churches", force: :cascade do |t|
@@ -114,7 +129,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
     t.string "category", default: "Other", null: false
     t.boolean "available", default: true, null: false
     t.bigint "church_member_id", null: false
-    t.bigint "church_id", null: false
+    t.bigint "church_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["available"], name: "index_items_on_available"
@@ -146,7 +161,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
     t.string "status", default: "open", null: false
     t.datetime "expires_at", null: false
     t.bigint "church_member_id", null: false
-    t.bigint "church_id", null: false
+    t.bigint "church_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["church_id", "status"], name: "index_needs_on_church_id_and_status"
@@ -176,7 +191,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
     t.text "description"
     t.string "contact_preference"
     t.bigint "church_member_id", null: false
-    t.bigint "church_id", null: false
+    t.bigint "church_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["church_id"], name: "index_services_listings_on_church_id"
@@ -202,6 +217,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
   add_foreign_key "borrow_requests", "church_members", column: "requester_id"
   add_foreign_key "borrow_requests", "items"
   add_foreign_key "church_members", "churches"
+  add_foreign_key "church_memberships", "church_members"
+  add_foreign_key "church_memberships", "churches"
   add_foreign_key "items", "church_members"
   add_foreign_key "items", "churches"
   add_foreign_key "moderation_actions", "church_members", column: "actor_id"

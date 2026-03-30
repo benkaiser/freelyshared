@@ -33,11 +33,11 @@
       </thead>
       <tbody>
         <% @churches.each do |church| %>
-          <% member_count = church.church_members.approved.count %>
-          <% items_count = church.items.count %>
-          <% services_count = church.services_listings.count %>
-          <% needs_count = church.needs.count %>
-          <% borrows_count = BorrowRequest.joins(:item).where(items: { church_id: church.id }, status: "returned").count %>
+          <% member_count = church.member_count %>
+          <% items_count = church.visible_items.count %>
+          <% services_count = church.visible_services_listings.count %>
+          <% needs_count = church.visible_needs.count %>
+          <% borrows_count = BorrowRequest.where(item_id: church.visible_items.select(:id), status: "returned").count %>
           <tr class="<%= 'table-secondary' if church.archived? %>">
             <td>
               <%= link_to church.name, superadmin_church_path(church), class: "text-decoration-none fw-bold" %>

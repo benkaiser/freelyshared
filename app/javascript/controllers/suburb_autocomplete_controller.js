@@ -105,8 +105,8 @@ export default class extends Controller {
 
   selectResult(result) {
     this.inputTarget.value = result.name
-    this.hiddenLatTarget.value = result.lat
-    this.hiddenLngTarget.value = result.lng
+    if (this.hasHiddenLatTarget) this.hiddenLatTarget.value = result.lat
+    if (this.hasHiddenLngTarget) this.hiddenLngTarget.value = result.lng
     this.hideDropdown()
 
     // Trigger the form submission or navigation

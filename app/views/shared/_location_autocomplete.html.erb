@@ -1,0 +1,25 @@
+<div class="mb-3"
+  data-controller="suburb-autocomplete"
+  data-action="suburb:selected->suburb-autocomplete#setLocation"
+>
+  <label class="form-label"><strong>Church Location</strong></label>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Start typing your suburb or city..."
+    value="<%= church.location_name %>"
+    data-suburb-autocomplete-target="input"
+    data-action="input->suburb-autocomplete#search keydown->suburb-autocomplete#handleKeydown"
+    autocomplete="off"
+  >
+  <input type="hidden" name="church_location_name" id="church_location_name" value="<%= church.location_name %>">
+  <input type="hidden" name="church_latitude" id="church_latitude" value="<%= church.latitude %>">
+  <input type="hidden" name="church_longitude" id="church_longitude" value="<%= church.longitude %>">
+
+  <div
+    class="dropdown-menu w-100 shadow-lg"
+    data-suburb-autocomplete-target="dropdown"
+    style="max-height: 300px; overflow-y: auto;"
+  ></div>
+  <small class="text-muted mt-1 d-block">Search for the suburb/city where your church meets</small>
+</div>

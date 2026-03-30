@@ -27,6 +27,12 @@ Rails.application.routes.draw do
 
   # Authenticated routes
   authenticate :church_member do
+    # Church switcher
+    post "switch_church", to: "church_switcher#switch", as: :switch_church
+
+    # Church memberships management
+    resources :church_memberships, only: [ :index, :destroy ]
+
     resources :items do
       member do
         patch :toggle_availability

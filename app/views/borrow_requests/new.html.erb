@@ -1,0 +1,51 @@
+<% content_for :title, "Borrow #{@item.title} - FreelyShared" %>
+
+<div class="container py-4">
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to "Items", items_path %></li>
+      <li class="breadcrumb-item"><%= link_to @item.title, @item %></li>
+      <li class="breadcrumb-item active">Request to Borrow</li>
+    </ol>
+  </nav>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-hand-index me-2"></i>Request to Borrow "<%= @item.title %>"</h5>
+        </div>
+        <div class="card-body">
+          <%= form_with model: [@item, @borrow_request], class: "row g-3" do |f| %>
+            <% if @borrow_request.errors.any? %>
+              <div class="col-12">
+                <div class="alert alert-danger">
+                  <ul class="mb-0">
+                    <% @borrow_request.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            <% end %>
+            <div class="col-6">
+              <%= f.label :start_date, "From", class: "form-label" %>
+              <%= f.date_field :start_date, class: "form-control", min: Date.today, value: @borrow_request.start_date || Date.today, required: true %>
+            </div>
+            <div class="col-6">
+              <%= f.label :end_date, "Until", class: "form-label" %>
+              <%= f.date_field :end_date, class: "form-control", min: Date.today, value: @borrow_request.end_date || Date.tomorrow, required: true %>
+            </div>
+            <div class="col-12">
+              <%= f.label :phone, "Your Phone Number", class: "form-label" %>
+              <%= f.text_field :phone, class: "form-control", placeholder: "So the owner can reach you", required: true, value: @borrow_request.phone.presence || current_church_member.phone %>
+            </div>
+            <div class="col-12">
+              <%= f.submit "Send Request", class: "btn btn-primary w-100" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

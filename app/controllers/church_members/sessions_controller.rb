@@ -5,6 +5,9 @@ class ChurchMembers::SessionsController < Devise::SessionsController
   protected
 
   def after_sign_in_path_for(resource)
+    # Set the current church in session on login
+    default_church = resource.church || resource.approved_churches.first
+    session[:current_church_id] = default_church&.id
     items_path
   end
 

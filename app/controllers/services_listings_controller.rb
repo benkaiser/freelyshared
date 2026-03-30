@@ -4,7 +4,7 @@ class ServicesListingsController < ApplicationController
   before_action :authorize_owner!, only: [ :edit, :update, :destroy ]
 
   def index
-    @services = current_church.services_listings.includes(:church_member).order(created_at: :desc)
+    @services = current_church.visible_services_listings.includes(:church_member).order(created_at: :desc)
   end
 
   def show
@@ -16,7 +16,6 @@ class ServicesListingsController < ApplicationController
 
   def create
     @service = current_church_member.services_listings.build(service_params)
-    @service.church = current_church
 
     if @service.save
       NotificationService.notify_new_service(@service)
@@ -45,7 +44,7 @@ class ServicesListingsController < ApplicationController
   private
 
   def set_service
-    @service = current_church.services_listings.find(params[:id])
+    @service = current_church.visible_services_listings.find(params[:id])
   end
 
   def authorize_owner!

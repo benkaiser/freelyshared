@@ -1,5 +1,8 @@
 class Church < ApplicationRecord
-  has_many :church_members, dependent: :destroy
+  has_many :church_memberships, dependent: :destroy
+  has_many :church_members, through: :church_memberships
+
+  # Keep direct associations for legacy/migration support, but primary access is through memberships
   has_many :items, dependent: :destroy
   has_many :services_listings, dependent: :destroy
   has_many :needs, dependent: :destroy
@@ -25,8 +28,37 @@ class Church < ApplicationRecord
     )
   }
 
+  # Returns members who have an approved membership in this church
+  def approved_members
+    ChurchMember.where(
+      id: church_memberships.approved.select(:church_member_id)
+    )
+  end
+
+  # Returns members with pending membership in this church
+  def pending_members
+    ChurchMember.where(
+      id: church_memberships.pending_approval.select(:church_member_id)
+    )
+  end
+
+  # Visible items: items owned by any approved member of this church
+  def visible_items
+    Item.where(church_member_id: church_memberships.approved.select(:church_member_id))
+  end
+
+  # Visible needs: needs owned by any approved member of this church
+  def visible_needs
+    Need.where(church_member_id: church_memberships.approved.select(:church_member_id))
+  end
+
+  # Visible services: services owned by any approved member of this church
+  def visible_services_listings
+    ServicesListing.where(church_member_id: church_memberships.approved.select(:church_member_id))
+  end
+
   def member_count
-    church_members.approved.count
+    church_memberships.approved.count
   end
 
   def members_needed
@@ -34,13 +66,15 @@ class Church < ApplicationRecord
   end
 
   def admins
-    church_members.approved.admins
+    approved_members.where(
+      id: church_memberships.admins.select(:church_member_id)
+    )
   end
 
   def check_ready!
     if member_count >= 5 && status == "pending"
       update!(status: "ready", ready_at: Time.current)
-      church_members.approved.each do |member|
+      approved_members.each do |member|
         ChurchReadyMailer.notify_member(self, member).deliver_later
       end
     end

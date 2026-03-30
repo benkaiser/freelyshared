@@ -32,38 +32,62 @@ class ChurchesController < ApplicationController
 
     Church.transaction do
       if @church.save
-        # Add registrant as first member with password
-        password = params[:registrant_password]
-        registrant_admin = params[:registrant_admin] == "1"
-        member = @church.church_members.create!(
-          name: params[:registrant_name],
-          email: params[:registrant_email],
-          password: password,
-          password_confirmation: password,
-          is_registrant: true,
-          admin: registrant_admin,
-          approval_status: "approved"
-        )
+        if church_member_signed_in?
+          # Signed-in user registering a new church — create membership only
+          @church.church_memberships.create!(
+            church_member: current_church_member,
+            admin: params[:registrant_admin] == "1",
+            approval_status: "approved",
+            is_registrant: true,
+            joined_at: Time.current
+          )
+          session[:current_church_id] = @church.id
+          redirect_to thankyou_church_path(@church)
+        else
+          # New user registering a church — create ChurchMember + membership
+          password = params[:registrant_password]
+          registrant_admin = params[:registrant_admin] == "1"
+          member = ChurchMember.create!(
+            name: params[:registrant_name],
+            email: params[:registrant_email],
+            password: password,
+            password_confirmation: password,
+            church: @church
+          )
+          @church.church_memberships.create!(
+            church_member: member,
+            admin: registrant_admin,
+            approval_status: "approved",
+            is_registrant: true,
+            joined_at: Time.current
+          )
 
-        # Add initial members if provided (they get invited, no password yet)
-        if params[:members].present?
-          params[:members].each do |m|
-            next if m[:name].blank? || m[:email].blank?
-            temp_password = SecureRandom.hex(16)
-            @church.church_members.create!(
-              name: m[:name],
-              email: m[:email],
-              password: temp_password,
-              password_confirmation: temp_password,
-              admin: m[:admin] == "1",
-              approval_status: "approved"
-            )
+          # Add initial members if provided (they get invited, no password yet)
+          if params[:members].present?
+            params[:members].each do |m|
+              next if m[:name].blank? || m[:email].blank?
+              temp_password = SecureRandom.hex(16)
+              initial_member = ChurchMember.create!(
+                name: m[:name],
+                email: m[:email],
+                password: temp_password,
+                password_confirmation: temp_password,
+                church: @church
+              )
+              @church.church_memberships.create!(
+                church_member: initial_member,
+                admin: m[:admin] == "1",
+                approval_status: "approved",
+                joined_at: Time.current
+              )
+            end
           end
-        end
 
-        # Sign in the registrant
-        sign_in(member)
-        redirect_to thankyou_church_path(@church)
+          # Sign in the registrant
+          sign_in(member)
+          session[:current_church_id] = @church.id
+          redirect_to thankyou_church_path(@church)
+        end
       else
         render :new, status: :unprocessable_entity
       end
@@ -75,24 +99,55 @@ class ChurchesController < ApplicationController
 
   def join
     @church = Church.find(params[:id])
-    @member = @church.church_members.new(member_params)
 
-    if @church.require_admin_approval?
-      @member.approval_status = "pending"
-    else
-      @member.approval_status = "approved"
-    end
+    if church_member_signed_in?
+      # Signed-in user joining another church — create membership only
+      if current_church_member.membership_for(@church)
+        redirect_to church_path(@church), alert: "You are already a member of this church."
+        return
+      end
 
-    if @member.save
+      approval = @church.require_admin_approval? ? "pending" : "approved"
+      @church.church_memberships.create!(
+        church_member: current_church_member,
+        approval_status: approval,
+        joined_at: Time.current
+      )
+
       if @church.require_admin_approval?
-        MemberApprovalMailer.notify_admins(@member).deliver_later
+        MemberApprovalMailer.notify_admins_for_church(@church, current_church_member).deliver_later
         redirect_to pending_approval_church_path(@church)
       else
-        sign_in(@member)
+        session[:current_church_id] = @church.id
         redirect_to thankyou_church_path(@church)
       end
     else
-      render :show, status: :unprocessable_entity
+      # New user joining — create ChurchMember + membership
+      @member = ChurchMember.new(member_params)
+      @member.church = @church
+
+      approval = @church.require_admin_approval? ? "pending" : "approved"
+
+      ChurchMember.transaction do
+        if @member.save
+          @church.church_memberships.create!(
+            church_member: @member,
+            approval_status: approval,
+            joined_at: Time.current
+          )
+
+          if @church.require_admin_approval?
+            MemberApprovalMailer.notify_admins(@member).deliver_later
+            redirect_to pending_approval_church_path(@church)
+          else
+            sign_in(@member)
+            session[:current_church_id] = @church.id
+            redirect_to thankyou_church_path(@church)
+          end
+        else
+          render :show, status: :unprocessable_entity
+        end
+      end
     end
   end
 

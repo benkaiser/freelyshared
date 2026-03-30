@@ -3,8 +3,9 @@ class NotificationService
 
   class << self
     def notify_new_need(need)
-      send_to_church(
-        need.church,
+      # Send to ALL churches the owner belongs to
+      send_to_member_churches(
+        need.church_member,
         :notify_new_needs,
         title: "New Need Posted",
         body: "#{need.church_member.name}: #{need.title}",
@@ -14,8 +15,8 @@ class NotificationService
     end
 
     def notify_new_service(service)
-      send_to_church(
-        service.church,
+      send_to_member_churches(
+        service.church_member,
         :notify_new_services,
         title: "New Service Offered",
         body: "#{service.church_member.name}: #{service.title}",
@@ -25,8 +26,8 @@ class NotificationService
     end
 
     def notify_new_item(item)
-      send_to_church(
-        item.church,
+      send_to_member_churches(
+        item.church_member,
         :notify_new_items,
         title: "New Item Listed",
         body: "#{item.church_member.name}: #{item.title}",
@@ -51,17 +52,26 @@ class NotificationService
 
     private
 
-    def send_to_church(church, preference_field, title:, body:, url:, exclude_member: nil)
+    # Send notifications to all members of all churches the given member belongs to
+    def send_to_member_churches(member, preference_field, title:, body:, url:, exclude_member: nil)
+      # Get all approved church IDs for this member
+      church_ids = member.church_memberships.approved.pluck(:church_id)
+      return if church_ids.empty?
+
+      # Get all approved member IDs across these churches
+      member_ids = ChurchMembership.approved
+        .where(church_id: church_ids)
+        .select(:church_member_id)
+
       subscriptions = PushSubscription
-        .joins(:church_member)
-        .where(church_members: { church_id: church.id })
+        .where(church_member_id: member_ids)
         .where(preference_field => true)
 
       if exclude_member
         subscriptions = subscriptions.where.not(church_member_id: exclude_member.id)
       end
 
-      send_push(subscriptions, title: title, body: body, url: url)
+      send_push(subscriptions.distinct, title: title, body: body, url: url)
     end
 
     def send_push(subscriptions, title:, body:, url:)

@@ -37,7 +37,7 @@ namespace :superadmin do
     if superadmins.any?
       puts "Superadmins:"
       superadmins.each do |m|
-        puts "  #{m.name} <#{m.email}> (#{m.church.name})"
+        puts "  #{m.name} <#{m.email}> (#{m.church&.name || 'no default church'})"
       end
     else
       puts "No superadmins configured."

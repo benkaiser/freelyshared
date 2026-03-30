@@ -77,11 +77,11 @@
             <%= form_with model: [@item, @borrow_request], class: "row g-3" do |f| %>
               <div class="col-6">
                 <%= f.label :start_date, "From", class: "form-label" %>
-                <%= f.date_field :start_date, class: "form-control", min: Date.today, required: true %>
+                <%= f.date_field :start_date, class: "form-control", min: Date.today, value: Date.today, required: true %>
               </div>
               <div class="col-6">
                 <%= f.label :end_date, "Until", class: "form-label" %>
-                <%= f.date_field :end_date, class: "form-control", min: Date.today, required: true %>
+                <%= f.date_field :end_date, class: "form-control", min: Date.today, value: Date.tomorrow, required: true %>
               </div>
               <div class="col-12">
                 <%= f.label :phone, "Your Phone Number", class: "form-label" %>

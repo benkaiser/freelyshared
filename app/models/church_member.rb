@@ -6,7 +6,10 @@ class ChurchMember < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  belongs_to :church
+  belongs_to :church, optional: true
+
+  has_many :church_memberships, dependent: :destroy
+  has_many :churches, through: :church_memberships
 
   has_many :items, dependent: :destroy
   has_many :services_listings, dependent: :destroy
@@ -49,15 +52,33 @@ class ChurchMember < ApplicationRecord
     approval_status == "pending"
   end
 
-  # Devise: block pending/rejected/suspended members from signing in
+  # Multi-church membership helpers
+  def member_of?(church)
+    church_memberships.approved.exists?(church_id: church.id)
+  end
+
+  def admin_of?(church)
+    church_memberships.admins.exists?(church_id: church.id)
+  end
+
+  def approved_churches
+    churches.merge(ChurchMembership.approved)
+  end
+
+  def membership_for(church)
+    church_memberships.find_by(church_id: church.id)
+  end
+
+  # Devise: block suspended members from signing in.
+  # Allow login if they have ANY approved membership.
   def active_for_authentication?
-    super && approved? && !suspended?
+    super && !suspended? && (church_memberships.approved.exists? || approved?)
   end
 
   def inactive_message
     if suspended?
       :suspended
-    elsif !approved?
+    elsif !church_memberships.approved.exists? && !approved?
       :pending_approval
     else
       super
@@ -88,6 +109,6 @@ class ChurchMember < ApplicationRecord
   end
 
   def check_church_ready
-    church.check_ready!
+    church&.check_ready!
   end
 end

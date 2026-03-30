@@ -41,68 +41,111 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 mx-auto">
-        <!-- Join Form -->
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white text-center">
-            <h3 class="card-title mb-0">
-              <i class="bi bi-person-plus me-2"></i>
-              Join <%= @church.name %>
-            </h3>
-          </div>
-          <div class="card-body p-4">
-            <%= form_with model: @member, url: join_church_path(@church), local: true, class: "row g-3" do |form| %>
+        <% if church_member_signed_in? %>
+          <% existing_membership = current_church_member.membership_for(@church) %>
+          <% if existing_membership %>
+            <div class="card shadow-sm">
+              <div class="card-body p-4 text-center">
+                <% if existing_membership.approved? %>
+                  <i class="bi bi-check-circle-fill text-success fs-1 mb-3 d-block"></i>
+                  <h4>You're a member of this church!</h4>
+                  <p class="text-muted">You can access this church's content by switching to it.</p>
+                  <% if @church.id != current_church&.id %>
+                    <%= button_to "Switch to #{@church.name}", switch_church_path(church_id: @church.id), method: :post, class: "btn btn-primary" %>
+                  <% else %>
+                    <%= link_to "Browse Items", items_path, class: "btn btn-primary" %>
+                  <% end %>
+                <% else %>
+                  <i class="bi bi-hourglass-split text-warning fs-1 mb-3 d-block"></i>
+                  <h4>Your request is pending</h4>
+                  <p class="text-muted">An admin will review your membership request soon.</p>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <!-- Join button for signed-in user -->
+            <div class="card shadow-sm">
+              <div class="card-header bg-primary text-white text-center">
+                <h3 class="card-title mb-0">
+                  <i class="bi bi-person-plus me-2"></i>
+                  Join <%= @church.name %>
+                </h3>
+              </div>
+              <div class="card-body p-4 text-center">
+                <p class="text-muted mb-4">You're signed in as <strong><%= current_church_member.name %></strong>. Click below to join this church.</p>
+                <%= button_to "Join this church", join_church_path(@church), method: :post, class: "btn btn-success btn-lg px-5 py-3" %>
+                <% if @church.require_admin_approval? %>
+                  <p class="text-muted small mt-3">
+                    <i class="bi bi-info-circle me-1"></i>This church requires admin approval for new members.
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <!-- Join Form for new users -->
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white text-center">
+              <h3 class="card-title mb-0">
+                <i class="bi bi-person-plus me-2"></i>
+                Join <%= @church.name %>
+              </h3>
+            </div>
+            <div class="card-body p-4">
+              <%= form_with model: @member, url: join_church_path(@church), local: true, class: "row g-3" do |form| %>
 
-              <% if @member.errors.any? %>
+                <% if @member.errors.any? %>
+                  <div class="col-12">
+                    <div class="alert alert-danger">
+                      <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:
+                      </h5>
+                      <ul class="mb-0">
+                        <% @member.errors.full_messages.each do |message| %>
+                          <li><%= message %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  </div>
+                <% end %>
+
+                <div class="col-md-6">
+                  <%= form.label :name, class: "form-label fw-semibold" %>
+                  <%= form.text_field :name, class: "form-control form-control-lg", placeholder: "Your name", required: true %>
+                </div>
+
+                <div class="col-md-6">
+                  <%= form.label :email, class: "form-label fw-semibold" %>
+                  <%= form.email_field :email, class: "form-control form-control-lg", placeholder: "your@email.com", required: true %>
+                </div>
+
+                <div class="col-md-6">
+                  <%= form.label :password, class: "form-label fw-semibold" %>
+                  <%= form.password_field :password, class: "form-control form-control-lg", placeholder: "Choose a password", required: true, minlength: 6 %>
+                  <small class="text-muted">Minimum 6 characters</small>
+                </div>
+
+                <div class="col-md-6">
+                  <%= form.label :password_confirmation, "Confirm Password", class: "form-label fw-semibold" %>
+                  <%= form.password_field :password_confirmation, class: "form-control form-control-lg", placeholder: "Confirm your password", required: true %>
+                </div>
+
+                <div class="col-12 text-center mt-4">
+                  <%= form.submit "Join this church", class: "btn btn-success btn-lg px-5 py-3" %>
+                </div>
+
                 <div class="col-12">
-                  <div class="alert alert-danger">
-                    <h5 class="alert-heading">
-                      <i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:
-                    </h5>
-                    <ul class="mb-0">
-                      <% @member.errors.full_messages.each do |message| %>
-                        <li><%= message %></li>
-                      <% end %>
-                    </ul>
+                  <div class="bg-light rounded p-3 mt-3">
+                    <p class="text-muted small text-center mb-0">
+                      <i class="bi bi-shield-check text-success me-1"></i>
+                      We'll never spam you or share your email. You'll be notified when the community is active.
+                    </p>
                   </div>
                 </div>
               <% end %>
-
-              <div class="col-md-6">
-                <%= form.label :name, class: "form-label fw-semibold" %>
-                <%= form.text_field :name, class: "form-control form-control-lg", placeholder: "Your name", required: true %>
-              </div>
-
-              <div class="col-md-6">
-                <%= form.label :email, class: "form-label fw-semibold" %>
-                <%= form.email_field :email, class: "form-control form-control-lg", placeholder: "your@email.com", required: true %>
-              </div>
-
-              <div class="col-md-6">
-                <%= form.label :password, class: "form-label fw-semibold" %>
-                <%= form.password_field :password, class: "form-control form-control-lg", placeholder: "Choose a password", required: true, minlength: 6 %>
-                <small class="text-muted">Minimum 6 characters</small>
-              </div>
-
-              <div class="col-md-6">
-                <%= form.label :password_confirmation, "Confirm Password", class: "form-label fw-semibold" %>
-                <%= form.password_field :password_confirmation, class: "form-control form-control-lg", placeholder: "Confirm your password", required: true %>
-              </div>
-
-              <div class="col-12 text-center mt-4">
-                <%= form.submit "Join this church", class: "btn btn-success btn-lg px-5 py-3" %>
-              </div>
-
-              <div class="col-12">
-                <div class="bg-light rounded p-3 mt-3">
-                  <p class="text-muted small text-center mb-0">
-                    <i class="bi bi-shield-check text-success me-1"></i>
-                    We'll never spam you or share your email. You'll be notified when the community is active.
-                  </p>
-                </div>
-              </div>
-            <% end %>
+            </div>
           </div>
-        </div>
+        <% end %>
       </div>
     </div>
   </div>

@@ -59,7 +59,7 @@ class BorrowRequestsController < ApplicationController
   private
 
   def set_item
-    @item = current_church.items.find(params[:item_id])
+    @item = current_church.visible_items.find(params[:item_id])
   end
 
   def set_borrow_request

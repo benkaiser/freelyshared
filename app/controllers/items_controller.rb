@@ -5,7 +5,7 @@ class ItemsController < ApplicationController
   before_action :authorize_owner_or_admin!, only: [ :destroy ]
 
   def index
-    @items = current_church.items.includes(:church_member, photo_attachment: :blob)
+    @items = current_church.visible_items.includes(:church_member, photo_attachment: :blob)
       .by_category(params[:category])
       .order(created_at: :desc)
     @categories = Item::CATEGORIES
@@ -21,7 +21,6 @@ class ItemsController < ApplicationController
 
   def create
     @item = current_church_member.items.build(item_params)
-    @item.church = current_church
 
     if @item.save
       redirect_to @item, notice: "Item listed successfully!"
@@ -48,7 +47,7 @@ class ItemsController < ApplicationController
         action_type: "remove_item",
         target_type: "Item",
         target_id: @item.id,
-        church: @item.church
+        church: current_church
       )
     end
     @item.destroy
@@ -63,7 +62,7 @@ class ItemsController < ApplicationController
   private
 
   def set_item
-    @item = current_church.items.find(params[:id])
+    @item = current_church.visible_items.find(params[:id])
   end
 
   def authorize_owner!
@@ -73,7 +72,7 @@ class ItemsController < ApplicationController
   end
 
   def authorize_owner_or_admin!
-    unless @item.owner?(current_church_member) || current_church_member&.admin?
+    unless @item.owner?(current_church_member) || current_church_member&.admin_of?(current_church)
       redirect_to items_path, alert: "You don't have permission to do that."
     end
   end

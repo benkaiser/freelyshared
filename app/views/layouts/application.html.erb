@@ -43,9 +43,33 @@
         <% end %>
 
         <% if church_member_signed_in? %>
-          <span class="text-muted d-none d-lg-inline me-3">
-            <i class="bi bi-building me-1"></i><%= current_church&.name %>
-          </span>
+          <% user_churches = current_church_member.approved_churches %>
+          <% if user_churches.count > 1 %>
+            <div class="dropdown d-none d-lg-inline me-3">
+              <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-building me-1"></i><%= current_church&.name %>
+              </button>
+              <ul class="dropdown-menu">
+                <% user_churches.each do |church| %>
+                  <li>
+                    <% if church.id == current_church&.id %>
+                      <span class="dropdown-item active"><i class="bi bi-check-lg me-1"></i><%= church.name %></span>
+                    <% else %>
+                      <%= button_to switch_church_path(church_id: church.id), method: :post, class: "dropdown-item" do %>
+                        <%= church.name %>
+                      <% end %>
+                    <% end %>
+                  </li>
+                <% end %>
+                <li><hr class="dropdown-divider"></li>
+                <li><%= link_to "Manage Churches", church_memberships_path, class: "dropdown-item" %></li>
+              </ul>
+            </div>
+          <% else %>
+            <span class="text-muted d-none d-lg-inline me-3">
+              <i class="bi bi-building me-1"></i><%= current_church&.name %>
+            </span>
+          <% end %>
         <% end %>
 
         <div class="navbar-nav ms-auto">
@@ -66,9 +90,12 @@
               <% end %>
               <%= link_to profile_path, class: "nav-link #{'active' if controller_name == 'profiles'}" do %>
                 <i class="bi bi-person me-1"></i> Profile
+                <% if pending_borrow_requests_count > 0 %>
+                  <span class="badge bg-danger rounded-pill"><%= pending_borrow_requests_count %></span>
+                <% end %>
               <% end %>
-              <% if current_church_member&.admin? %>
-                <% pending_count = current_church.church_members.pending_approval.count %>
+              <% if current_church_member&.admin_of?(current_church) %>
+                <% pending_count = current_church.church_memberships.pending_approval.count %>
                 <%= link_to church_admin_path, class: "nav-link #{'active' if controller_name == 'church_admin'}" do %>
                   <i class="bi bi-shield-check me-1"></i> Admin
                   <% if pending_count > 0 %>
@@ -77,7 +104,7 @@
                 <% end %>
               <% end %>
             </div>
-            <%= link_to destroy_church_member_session_path, data: { turbo_method: :delete }, class: "btn btn-outline-secondary btn-sm ms-2 d-none d-lg-inline-block" do %>
+            <%= link_to destroy_church_member_session_path, data: { turbo_method: :delete }, class: "nav-link text-muted ms-2" do %>
               <i class="bi bi-box-arrow-right"></i> Sign out
             <% end %>
           <% else %>
@@ -91,11 +118,37 @@
 
     <!-- Church name bar on mobile -->
     <% if church_member_signed_in? %>
-      <div class="d-lg-none bg-light border-bottom py-1 text-center">
-        <small class="text-muted">
-          <i class="bi bi-building me-1"></i><%= current_church&.name %>
-        </small>
-      </div>
+      <% user_churches = current_church_member.approved_churches %>
+      <% if user_churches.count > 1 %>
+        <div class="d-lg-none bg-light border-bottom py-1 text-center">
+          <div class="dropdown">
+            <button class="btn btn-link btn-sm text-muted text-decoration-none dropdown-toggle p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-building me-1"></i><%= current_church&.name %>
+            </button>
+            <ul class="dropdown-menu">
+              <% user_churches.each do |church| %>
+                <li>
+                  <% if church.id == current_church&.id %>
+                    <span class="dropdown-item active"><i class="bi bi-check-lg me-1"></i><%= church.name %></span>
+                  <% else %>
+                    <%= button_to switch_church_path(church_id: church.id), method: :post, class: "dropdown-item" do %>
+                      <%= church.name %>
+                    <% end %>
+                  <% end %>
+                </li>
+              <% end %>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= link_to "Manage Churches", church_memberships_path, class: "dropdown-item" %></li>
+            </ul>
+          </div>
+        </div>
+      <% else %>
+        <div class="d-lg-none bg-light border-bottom py-1 text-center">
+          <small class="text-muted">
+            <i class="bi bi-building me-1"></i><%= current_church&.name %>
+          </small>
+        </div>
+      <% end %>
     <% end %>
 
     <!-- Main Content -->
@@ -140,7 +193,14 @@
             <span>My Listings</span>
           <% end %>
           <%= link_to profile_path, class: "bottom-nav-item #{'active' if controller_name == 'profiles'}" do %>
-            <i class="bi bi-person"></i>
+            <span class="position-relative">
+              <i class="bi bi-person"></i>
+              <% if pending_borrow_requests_count > 0 %>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                  <%= pending_borrow_requests_count %>
+                </span>
+              <% end %>
+            </span>
             <span>Profile</span>
           <% end %>
         </div>

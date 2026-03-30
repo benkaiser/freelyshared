@@ -1,4 +1,6 @@
 class Superadmin::UsersController < Superadmin::BaseController
+  skip_before_action :require_superadmin!, only: :stop_impersonating
+  before_action :require_impersonating!, only: :stop_impersonating
   def index
     @users = ChurchMember.includes(:church)
     @users = @users.where("LOWER(email) LIKE :q OR LOWER(name) LIKE :q", q: "%#{params[:q].downcase}%") if params[:q].present?
@@ -47,5 +49,11 @@ class Superadmin::UsersController < Superadmin::BaseController
     session.delete(:superadmin_id)
     sign_in(:church_member, superadmin)
     redirect_to superadmin_root_path, notice: "Stopped impersonating."
+  end
+
+  private
+
+  def require_impersonating!
+    raise ActionController::RoutingError, "Not Found" unless session[:superadmin_id].present?
   end
 end
