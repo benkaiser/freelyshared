@@ -20,7 +20,11 @@ if Rails.env.development? || ENV["SEED_DEMO_DATA"] == "1"
     c.longitude = 153.0251
     c.status = "ready"
     c.ready_at = Time.current
+    c.demo = true
   end
+
+  # Ensure demo flag is set even if church already existed
+  church.update!(demo: true) unless church.demo?
 
   # Enable admin approval for testing
   church.update!(require_admin_approval: true)

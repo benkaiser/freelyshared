@@ -157,7 +157,12 @@ section {
 .dropdown-item:hover,
 .dropdown-item.active {
   background-color: #0d6efd;
-  color: white;
+  color: white !important;
+
+  // Ensure all text inside dropdown items stays readable on blue background
+  &, *, &.text-primary {
+    color: white !important;
+  }
 }
 
 // Map marker styles
@@ -548,7 +553,7 @@ html {
   text-align: center;
   padding: 3rem 1rem;
 
-  i {
+  > i {
     font-size: 3rem;
     color: #dee2e6;
     margin-bottom: 1rem;

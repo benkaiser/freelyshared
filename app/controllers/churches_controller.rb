@@ -1,7 +1,7 @@
 class ChurchesController < ApplicationController
   def search
     if params[:q].present? && params[:q].length >= 2
-      @churches = Church.search_by_name(params[:q]).limit(10)
+      @churches = Church.not_demo.search_by_name(params[:q]).limit(10)
       render json: @churches.map { |c|
         {
           id: c.id,

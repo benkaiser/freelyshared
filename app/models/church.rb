@@ -16,6 +16,7 @@ class Church < ApplicationRecord
   scope :pending, -> { where(status: "pending") }
   scope :active, -> { where(archived: false) }
   scope :archived, -> { where(archived: true) }
+  scope :not_demo, -> { where(demo: false) }
 
   scope :search_by_name, ->(query) {
     where("LOWER(name) LIKE ?", "%#{query.downcase}%")

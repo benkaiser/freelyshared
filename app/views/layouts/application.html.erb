@@ -93,17 +93,19 @@
           <% if church_member_signed_in? %>
             <!-- Desktop navigation links -->
             <div class="d-none d-lg-flex align-items-center">
-              <%= link_to items_path, class: "nav-link #{'active' if controller_name == 'items' && action_name == 'index'}" do %>
-                <i class="bi bi-box-seam me-1"></i> Browse Items
-              <% end %>
-              <%= link_to services_path, class: "nav-link #{'active' if controller_name == 'services_listings'}" do %>
-                <i class="bi bi-tools me-1"></i> Services
-              <% end %>
-              <%= link_to needs_path, class: "nav-link #{'active' if controller_name == 'needs'}" do %>
-                <i class="bi bi-hand-thumbs-up me-1"></i> Needs
-              <% end %>
-              <%= link_to my_listings_path, class: "nav-link #{'active' if request.path == my_listings_path}" do %>
-                <i class="bi bi-list-ul me-1"></i> My Listings
+              <% if current_church&.status == "ready" %>
+                <%= link_to items_path, class: "nav-link #{'active' if controller_name == 'items' && action_name == 'index'}" do %>
+                  <i class="bi bi-box-seam me-1"></i> Browse Items
+                <% end %>
+                <%= link_to services_path, class: "nav-link #{'active' if controller_name == 'services_listings'}" do %>
+                  <i class="bi bi-tools me-1"></i> Services
+                <% end %>
+                <%= link_to needs_path, class: "nav-link #{'active' if controller_name == 'needs'}" do %>
+                  <i class="bi bi-hand-thumbs-up me-1"></i> Needs
+                <% end %>
+                <%= link_to my_listings_path, class: "nav-link #{'active' if request.path == my_listings_path}" do %>
+                  <i class="bi bi-list-ul me-1"></i> My Listings
+                <% end %>
               <% end %>
               <%= link_to profile_path, class: "nav-link #{'active' if controller_name == 'profiles'}" do %>
                 <i class="bi bi-person me-1"></i> Profile
@@ -190,7 +192,7 @@
     </main>
 
     <!-- Bottom Tab Navigation (mobile only, authenticated only) -->
-    <% if church_member_signed_in? %>
+    <% if church_member_signed_in? && current_church&.status == "ready" %>
       <nav class="d-lg-none fixed-bottom bg-white border-top shadow-lg bottom-nav">
         <div class="d-flex justify-content-around py-1">
           <%= link_to items_path, class: "bottom-nav-item #{'active' if controller_name == 'items' && action_name == 'index'}" do %>

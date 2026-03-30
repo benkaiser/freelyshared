@@ -1,7 +1,8 @@
 class PagesController < ApplicationController
   def home
     # Load a sample church to showcase real data on the landing page
-    @showcase_church = Church.ready.active.first
+    # Prefer a demo church for showcase, fall back to first ready church
+    @showcase_church = Church.ready.active.where(demo: true).first || Church.ready.active.first
 
     if @showcase_church
       @showcase_items = @showcase_church.visible_items
