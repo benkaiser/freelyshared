@@ -1,4 +1,6 @@
 class Item < ApplicationRecord
+  include HasPhoto
+
   CATEGORIES = [
     "Tools",
     "Kitchen & Home",
@@ -14,7 +16,6 @@ class Item < ApplicationRecord
   belongs_to :church_member
   belongs_to :church
   has_many :borrow_requests, dependent: :destroy
-  has_one_attached :photo
 
   validates :title, presence: true, length: { maximum: 200 }
   validates :description, length: { maximum: 2000 }
@@ -25,18 +26,6 @@ class Item < ApplicationRecord
   scope :for_church, ->(church) { where(church: church) }
 
   before_validation :set_default_category
-
-  def photo_thumbnail
-    if photo.attached?
-      photo.variant(resize_to_fill: [ 300, 300 ])
-    end
-  end
-
-  def photo_medium
-    if photo.attached?
-      photo.variant(resize_to_limit: [ 600, 600 ])
-    end
-  end
 
   def owner?(member)
     church_member_id == member.id

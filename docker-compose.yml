@@ -23,9 +23,8 @@ services:
       - "8888:8888"
     depends_on:
       - db
-    environment:
-      - RAILS_ENV=development
-      - DATABASE_URL=postgres://postgres:password@db:5432/freelyshared_development
+    env_file:
+      - .env
     stdin_open: true
     tty: true
 
