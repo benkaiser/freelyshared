@@ -29,7 +29,7 @@
           </div>
 
           <div class="d-flex align-items-center mb-3">
-            <img src="<%= @service.church_member.gravatar_url(48) %>" class="rounded-circle me-3" width="48" height="48" alt="">
+            <img src="<%= @service.church_member.avatar_url(48) %>" class="rounded-circle me-3" width="48" height="48" style="object-fit: cover;" alt="">
             <div>
               <strong><%= @service.church_member.name %></strong>
               <% if @service.church_member.phone.present? %>

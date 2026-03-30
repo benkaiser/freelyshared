@@ -1,4 +1,6 @@
 class ChurchMember < ApplicationRecord
+  include HasPhoto
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -44,12 +46,24 @@ class ChurchMember < ApplicationRecord
     approved? ? super : :pending_approval
   end
 
+  # Returns a URL string for the member's avatar.
+  # Uses the uploaded photo variant if present, otherwise falls back to Gravatar.
+  def avatar_url(size = 80)
+    if photo.attached?
+      variant_name = size <= 100 ? :thumbnail : :medium
+      variant = StorageService.variant(photo, variant_name)
+      Rails.application.routes.url_helpers.rails_representation_path(variant.processed)
+    else
+      gravatar_url(size)
+    end
+  end
+
+  private
+
   def gravatar_url(size = 80)
     hash = Digest::MD5.hexdigest(email.downcase.strip)
     "https://www.gravatar.com/avatar/#{hash}?s=#{size}&d=mp"
   end
-
-  private
 
   def generate_verification_token
     self.verification_token = SecureRandom.urlsafe_base64(32)

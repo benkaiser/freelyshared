@@ -13,8 +13,6 @@ application.register("hello", HelloController)
 import ShareButtonController from "./share_button_controller"
 application.register("share-button", ShareButtonController)
 
-import SignupMapController from "./signup_map_controller"
-application.register("signup-map", SignupMapController)
 
 import SuburbAutocompleteController from "./suburb_autocomplete_controller"
 application.register("suburb-autocomplete", SuburbAutocompleteController)

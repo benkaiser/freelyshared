@@ -11,7 +11,7 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="text-center mb-4">
-        <img src="<%= @member.gravatar_url(120) %>" class="rounded-circle mb-3" width="120" height="120" alt="">
+        <img src="<%= @member.avatar_url(120) %>" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;" alt="">
         <h2><%= @member.name %></h2>
         <% if @member.phone.present? %>
           <p class="text-muted"><i class="bi bi-phone me-1"></i><%= @member.phone %></p>

@@ -24,6 +24,6 @@ class ProfilesController < ApplicationController
   private
 
   def profile_params
-    params.require(:church_member).permit(:name, :phone, :show_email, :show_in_directory)
+    params.require(:church_member).permit(:name, :phone, :show_email, :show_in_directory, :photo)
   end
 end

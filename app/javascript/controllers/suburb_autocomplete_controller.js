@@ -196,16 +196,6 @@ export default class extends Controller {
       }, 3000)
     }
   }
-
-  navigateToInterest(event) {
-    const { suburb, lat, lng } = event.detail
-    const url = new URL('/interest', window.location.origin)
-    url.searchParams.set('suburb', suburb)
-    url.searchParams.set('lat', lat)
-    url.searchParams.set('lng', lng)
-    window.location.href = url.toString()
-  }
-
   setLocation(event) {
     const { suburb, lat, lng } = event.detail
     // Set hidden fields for church registration form

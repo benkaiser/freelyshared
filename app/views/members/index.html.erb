@@ -9,7 +9,7 @@
         <div class="col-6 col-md-4 col-lg-3">
           <%= link_to member_path(member), class: "text-decoration-none" do %>
             <div class="card listing-card h-100 text-center p-3">
-              <img src="<%= member.gravatar_url(80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80" alt="">
+              <img src="<%= member.avatar_url(80) %>" class="rounded-circle mx-auto mb-2" width="80" height="80" style="object-fit: cover;" alt="">
               <h6 class="text-dark mb-0"><%= member.name %></h6>
             </div>
           <% end %>

@@ -36,15 +36,17 @@ class StorageService
     # Returns a processed variant for an attachment using a named preset.
     #
     #   StorageService.variant(item.photo, :thumbnail)
+    #   StorageService.variant(item.photo, :thumbnail, processed: true)
     #
-    def variant(attachment, preset_name)
+    def variant(attachment, preset_name, processed: false)
       return nil unless attachment&.attached?
 
       transformations = VARIANT_PRESETS.fetch(preset_name) do
         raise ArgumentError, "Unknown variant preset: #{preset_name}. Available: #{VARIANT_PRESETS.keys.join(', ')}"
       end
 
-      attachment.variant(transformations)
+      v = attachment.variant(transformations)
+      processed ? v.processed : v
     end
 
     # Returns a URL suitable for use in views.
@@ -84,7 +86,8 @@ class StorageService
           errors << "must be a JPEG, PNG, GIF, or WebP image"
         end
 
-        if file.size > MAX_FILE_SIZES[:image]
+        file_size = file.respond_to?(:byte_size) ? file.byte_size : file.size
+        if file_size > MAX_FILE_SIZES[:image]
           errors << "must be smaller than #{MAX_FILE_SIZES[:image] / 1.megabyte}MB"
         end
       end

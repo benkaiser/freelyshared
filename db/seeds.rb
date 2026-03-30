@@ -25,7 +25,18 @@ if Rails.env.development?
   # Enable admin approval for testing
   church.update!(require_admin_approval: true)
 
+  # Seed images directory
+  seed_images_dir = Rails.root.join("db", "seed_images")
+
   # Create test members
+  member_avatars = {
+    "john@example.com" => "john_smith.jpg",
+    "sarah@example.com" => "sarah_johnson.jpg",
+    "mike@example.com" => "mike_chen.jpg",
+    "emma@example.com" => "emma_wilson.jpg",
+    "david@example.com" => "david_brown.jpg"
+  }
+
   members = []
   [
     { name: "John Smith", email: "john@example.com", admin: true },
@@ -47,6 +58,19 @@ if Rails.env.development?
     )
     member.save!
     members << member
+
+    avatar_file = member_avatars[member.email]
+    if avatar_file && !member.photo.attached?
+      avatar_path = seed_images_dir.join(avatar_file)
+      if File.exist?(avatar_path)
+        member.photo.attach(
+          io: File.open(avatar_path),
+          filename: avatar_file,
+          content_type: "image/jpeg"
+        )
+        puts "  Attached avatar #{avatar_file} to #{member.name}"
+      end
+    end
   end
 
   # Create a pending test member
@@ -66,6 +90,14 @@ if Rails.env.development?
   puts "Pending: pending@example.com / password123 (cannot log in)"
 
   # Create some items
+  item_images = {
+    "Circular Saw" => "circular_saw.jpg",
+    "Stand Mixer" => "stand_mixer.jpg",
+    "Camping Tent" => "camping_tent.jpg",
+    "Kids' Bike" => "kids_bike.jpg",
+    "Pressure Washer" => "pressure_washer.jpg"
+  }
+
   [
     { title: "Circular Saw", description: "DeWalt 7-1/4 inch circular saw. Great condition, includes extra blade.", category: "Tools", member: members[0] },
     { title: "Stand Mixer", description: "KitchenAid Artisan 5qt stand mixer. Perfect for baking.", category: "Kitchen & Home", member: members[1] },
@@ -74,8 +106,21 @@ if Rails.env.development?
     { title: "Pressure Washer", description: "Karcher K5 pressure washer with hose and attachments.", category: "Garden & Outdoor", member: members[4] }
   ].each do |attrs|
     member = attrs.delete(:member)
-    Item.find_or_create_by!(title: attrs[:title], church_member: member) do |item|
-      item.assign_attributes(attrs.merge(church: church))
+    item = Item.find_or_create_by!(title: attrs[:title], church_member: member) do |i|
+      i.assign_attributes(attrs.merge(church: church))
+    end
+
+    image_file = item_images[item.title]
+    if image_file && !item.photo.attached?
+      image_path = seed_images_dir.join(image_file)
+      if File.exist?(image_path)
+        item.photo.attach(
+          io: File.open(image_path),
+          filename: image_file,
+          content_type: "image/jpeg"
+        )
+        puts "  Attached #{image_file} to #{item.title}"
+      end
     end
   end
 

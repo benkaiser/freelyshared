@@ -20,6 +20,8 @@ module HasPhoto
     has_one_attached :photo
 
     validate :validate_photo_file
+
+    after_commit :preprocess_thumbnail, if: -> { photo.attached? }
   end
 
   def photo_thumbnail
@@ -53,5 +55,11 @@ module HasPhoto
     errors_list.each do |msg|
       errors.add(:photo, msg)
     end
+  end
+
+  # Generate the thumbnail variant immediately after save so browse pages
+  # don't pay the processing cost on the first visitor's request.
+  def preprocess_thumbnail
+    PreprocessThumbnailJob.perform_later(self.class.name, id)
   end
 end

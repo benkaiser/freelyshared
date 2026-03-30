@@ -16,7 +16,7 @@
             <div class="card listing-card h-100">
               <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
-                  <img src="<%= service.church_member.gravatar_url(40) %>" class="rounded-circle me-2" width="40" height="40" alt="">
+                  <img src="<%= service.church_member.avatar_url(40) %>" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;" alt="">
                   <div>
                     <h5 class="card-title mb-0 text-dark"><%= service.title %></h5>
                     <small class="text-muted"><%= service.church_member.name %></small>
