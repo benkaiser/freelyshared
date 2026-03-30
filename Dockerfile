@@ -33,9 +33,10 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config python-is-python3 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install Node.js and Yarn via official sources (not apt)
+# Install Node.js and Yarn
 ARG NODE_VERSION=18.20.4
-RUN curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-$(dpkg --print-architecture).tar.xz \
+RUN ARCH=$(dpkg --print-architecture | sed 's/amd64/x64/' | sed 's/arm64/arm64/') && \
+    curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${ARCH}.tar.xz \
     | tar -xJ --strip-components=1 -C /usr/local/ && \
     npm install -g yarn && \
     node --version && yarn --version
