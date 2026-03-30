@@ -87,6 +87,10 @@ class NotificationService
               private_key: ENV["VAPID_PRIVATE_KEY"]
             }
           )
+          TelemetryEvent.track("push_notification_sent",
+            member: sub.church_member,
+            metadata: { title: title }
+          )
         rescue WebPush::ExpiredSubscription
           sub.destroy
         rescue WebPush::ResponseError => e

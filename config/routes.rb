@@ -72,4 +72,38 @@ Rails.application.routes.draw do
   end
 
   root "pages#home"
+
+  # Superadmin routes
+  namespace :superadmin, path: "superadmin" do
+    root "dashboard#show"
+
+    resources :churches, only: [ :index, :show ] do
+      member do
+        post :activate
+        post :archive
+        post :unarchive
+        patch :update_settings
+        post :promote_admin
+        post :demote_admin
+        post :approve_member
+      end
+    end
+
+    resources :users, only: [ :index, :show, :destroy ] do
+      member do
+        post :suspend
+        post :unsuspend
+        post :impersonate
+      end
+    end
+
+    post "users/stop_impersonating", to: "users#stop_impersonating", as: :stop_impersonating
+
+    get "moderation", to: "moderation#index", as: :moderation_index
+    delete "moderation/item/:id", to: "moderation#remove_item", as: :remove_item
+    delete "moderation/service/:id", to: "moderation#remove_service", as: :remove_service
+    delete "moderation/need/:id", to: "moderation#remove_need", as: :remove_need
+
+    resource :telemetry, only: [ :show ], controller: "telemetry"
+  end
 end

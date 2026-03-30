@@ -1,0 +1,97 @@
+<% content_for :title, "#{@user.name} - Superadmin" %>
+
+<%= link_to superadmin_users_path, class: "text-decoration-none" do %>
+  <i class="bi bi-arrow-left me-1"></i>All Users
+<% end %>
+
+<div class="d-flex justify-content-between align-items-start mt-2 mb-4">
+  <div>
+    <h2>
+      <%= @user.name %>
+      <% if @user.superadmin? %><span class="badge bg-dark">Superadmin</span><% end %>
+      <% if @user.admin? %><span class="badge bg-primary">Admin</span><% end %>
+      <% if @user.suspended? %><span class="badge bg-danger">Suspended</span><% end %>
+      <% if @user.pending_approval? %><span class="badge bg-warning text-dark">Pending</span><% end %>
+    </h2>
+    <p class="text-muted mb-0">
+      <i class="bi bi-envelope me-1"></i><%= @user.email %>
+      &middot; <i class="bi bi-building me-1"></i><%= link_to @user.church.name, superadmin_church_path(@user.church), class: "text-decoration-none" %>
+      &middot; Joined <%= @user.created_at.strftime("%b %d, %Y") %>
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    <% if @user.suspended? %>
+      <%= button_to "Unsuspend", unsuspend_superadmin_user_path(@user), method: :post, class: "btn btn-success" %>
+    <% else %>
+      <%= button_to "Suspend", suspend_superadmin_user_path(@user), method: :post, class: "btn btn-warning", data: { turbo_confirm: "Suspend #{@user.name}? They won't be able to log in." } %>
+    <% end %>
+    <%= button_to "Impersonate", impersonate_superadmin_user_path(@user), method: :post, class: "btn btn-outline-dark", data: { turbo_confirm: "Sign in as #{@user.name}?" } %>
+    <%= button_to "Delete", superadmin_user_path(@user), method: :delete, class: "btn btn-danger", data: { turbo_confirm: "Permanently delete #{@user.name} and all their data? This cannot be undone." } %>
+  </div>
+</div>
+
+<!-- Activity Summary -->
+<div class="row g-3 mb-4">
+  <div class="col-3"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @items.count %></h4><small class="text-muted">Items</small></div></div></div>
+  <div class="col-3"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @services.count %></h4><small class="text-muted">Services</small></div></div></div>
+  <div class="col-3"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @needs.count %></h4><small class="text-muted">Needs</small></div></div></div>
+  <div class="col-3"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @borrow_requests.count %></h4><small class="text-muted">Borrows</small></div></div></div>
+</div>
+
+<!-- Items -->
+<% if @items.any? %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Items</h5></div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      <% @items.each do |item| %>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong><%= item.title %></strong>
+            <span class="badge bg-light text-dark ms-1"><%= item.category %></span>
+            <% unless item.available? %><span class="badge bg-secondary ms-1">Unavailable</span><% end %>
+          </div>
+          <%= button_to "Remove", superadmin_remove_item_path(item), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Remove '#{item.title}'?" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>
+
+<!-- Services -->
+<% if @services.any? %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0"><i class="bi bi-tools me-2"></i>Services</h5></div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      <% @services.each do |service| %>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <strong><%= service.title %></strong>
+          <%= button_to "Remove", superadmin_remove_service_path(service), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Remove '#{service.title}'?" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>
+
+<!-- Needs -->
+<% if @needs.any? %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0"><i class="bi bi-hand-thumbs-up me-2"></i>Needs</h5></div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      <% @needs.each do |need| %>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong><%= need.title %></strong>
+            <span class="badge bg-<%= need.status == 'open' ? 'success' : 'secondary' %> ms-1"><%= need.status %></span>
+          </div>
+          <%= button_to "Remove", superadmin_remove_need_path(need), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Remove '#{need.title}'?" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>

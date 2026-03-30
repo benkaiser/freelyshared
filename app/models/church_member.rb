@@ -13,6 +13,7 @@ class ChurchMember < ApplicationRecord
   has_many :needs, dependent: :destroy
   has_many :borrow_requests, foreign_key: :requester_id, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_many :moderation_actions, foreign_key: :actor_id, dependent: :nullify
 
   validates :name, presence: true, length: { minimum: 1, maximum: 200 }
   validates :approval_status, inclusion: { in: %w[approved pending rejected] }
@@ -20,6 +21,9 @@ class ChurchMember < ApplicationRecord
   scope :approved, -> { where(approval_status: "approved") }
   scope :pending_approval, -> { where(approval_status: "pending") }
   scope :admins, -> { where(admin: true) }
+  scope :superadmins, -> { where(superadmin: true) }
+  scope :active, -> { where(suspended: false) }
+  scope :suspended, -> { where(suspended: true) }
 
   before_create :generate_verification_token
 
@@ -27,6 +31,14 @@ class ChurchMember < ApplicationRecord
 
   def admin?
     admin
+  end
+
+  def superadmin?
+    superadmin
+  end
+
+  def suspended?
+    suspended
   end
 
   def approved?
@@ -37,13 +49,19 @@ class ChurchMember < ApplicationRecord
     approval_status == "pending"
   end
 
-  # Devise: block pending/rejected members from signing in
+  # Devise: block pending/rejected/suspended members from signing in
   def active_for_authentication?
-    super && approved?
+    super && approved? && !suspended?
   end
 
   def inactive_message
-    approved? ? super : :pending_approval
+    if suspended?
+      :suspended
+    elsif !approved?
+      :pending_approval
+    else
+      super
+    end
   end
 
   # Returns a URL string for the member's avatar.
@@ -52,7 +70,7 @@ class ChurchMember < ApplicationRecord
     if photo.attached?
       variant_name = size <= 100 ? :thumbnail : :medium
       variant = StorageService.variant(photo, variant_name)
-      Rails.application.routes.url_helpers.rails_representation_path(variant.processed)
+      Rails.application.routes.url_helpers.rails_representation_path(variant.processed, only_path: true)
     else
       gravatar_url(size)
     end

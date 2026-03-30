@@ -1,0 +1,69 @@
+<% content_for :title, "Churches - Superadmin" %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2><i class="bi bi-building text-primary me-2"></i>Churches</h2>
+</div>
+
+<!-- Search -->
+<div class="mb-3">
+  <%= form_tag superadmin_churches_path, method: :get, class: "d-flex gap-2" do %>
+    <input type="text" name="q" value="<%= params[:q] %>" class="form-control" placeholder="Search churches...">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+    <% if params[:q].present? %>
+      <%= link_to "Clear", superadmin_churches_path, class: "btn btn-outline-secondary" %>
+    <% end %>
+  <% end %>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th class="text-center">Members</th>
+          <th class="text-center">Items</th>
+          <th class="text-center">Services</th>
+          <th class="text-center">Needs</th>
+          <th class="text-center">Borrows</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @churches.each do |church| %>
+          <% member_count = church.church_members.approved.count %>
+          <% items_count = church.items.count %>
+          <% services_count = church.services_listings.count %>
+          <% needs_count = church.needs.count %>
+          <% borrows_count = BorrowRequest.joins(:item).where(items: { church_id: church.id }, status: "returned").count %>
+          <tr class="<%= 'table-secondary' if church.archived? %>">
+            <td>
+              <%= link_to church.name, superadmin_church_path(church), class: "text-decoration-none fw-bold" %>
+              <% if church.archived? %><span class="badge bg-secondary ms-1">archived</span><% end %>
+            </td>
+            <td><small class="text-muted"><%= church.location_name %></small></td>
+            <td>
+              <% if church.status == "ready" %>
+                <span class="badge bg-success">Ready</span>
+              <% else %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% end %>
+            </td>
+            <td class="text-center"><%= member_count %></td>
+            <td class="text-center"><%= items_count %></td>
+            <td class="text-center"><%= services_count %></td>
+            <td class="text-center"><%= needs_count %></td>
+            <td class="text-center"><%= borrows_count %></td>
+            <td>
+              <%= link_to superadmin_church_path(church), class: "btn btn-sm btn-outline-primary" do %>
+                <i class="bi bi-eye"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

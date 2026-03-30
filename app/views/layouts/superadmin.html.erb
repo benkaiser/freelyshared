@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Superadmin - FreelyShared" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body class="d-flex flex-column min-vh-100 bg-light">
+    <!-- Impersonation Banner -->
+    <% if session[:superadmin_id].present? %>
+      <div class="bg-warning text-dark text-center py-2 fw-bold">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        You are impersonating <%= current_church_member.name %> (<%= current_church_member.email %>)
+        &mdash;
+        <%= button_to "Stop Impersonating", superadmin_stop_impersonating_path, method: :post, class: "btn btn-sm btn-dark ms-2" %>
+      </div>
+    <% end %>
+
+    <!-- Top Bar -->
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+      <div class="container-fluid">
+        <%= link_to superadmin_root_path, class: "navbar-brand d-flex align-items-center" do %>
+          <i class="bi bi-shield-lock-fill text-warning me-2"></i>
+          <span class="fw-bold">FreelyShared Superadmin</span>
+        <% end %>
+        <div class="d-flex align-items-center">
+          <span class="text-light me-3">
+            <i class="bi bi-person-fill me-1"></i><%= current_church_member.name %>
+          </span>
+          <%= link_to root_path, class: "btn btn-outline-light btn-sm me-2" do %>
+            <i class="bi bi-arrow-left me-1"></i>Main App
+          <% end %>
+          <%= link_to destroy_church_member_session_path, data: { turbo_method: :delete }, class: "btn btn-outline-light btn-sm" do %>
+            <i class="bi bi-box-arrow-right"></i>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid flex-grow-1">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-dark sidebar py-3" style="min-height: calc(100vh - 56px);">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <%= link_to superadmin_root_path, class: "nav-link text-light #{'active fw-bold' if controller_name == 'dashboard'}" do %>
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to superadmin_churches_path, class: "nav-link text-light #{'active fw-bold' if controller_name == 'churches'}" do %>
+                <i class="bi bi-building me-2"></i>Churches
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to superadmin_users_path, class: "nav-link text-light #{'active fw-bold' if controller_name == 'users'}" do %>
+                <i class="bi bi-people me-2"></i>Users
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to superadmin_moderation_index_path, class: "nav-link text-light #{'active fw-bold' if controller_name == 'moderation'}" do %>
+                <i class="bi bi-shield-exclamation me-2"></i>Moderation Log
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to superadmin_telemetry_path, class: "nav-link text-light #{'active fw-bold' if controller_name == 'telemetry'}" do %>
+                <i class="bi bi-graph-up me-2"></i>Telemetry
+              <% end %>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Mobile nav -->
+        <div class="d-md-none bg-dark p-2">
+          <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <%= link_to superadmin_root_path, class: "btn btn-sm #{ controller_name == 'dashboard' ? 'btn-warning' : 'btn-outline-light' }" do %>
+              <i class="bi bi-speedometer2"></i> Dashboard
+            <% end %>
+            <%= link_to superadmin_churches_path, class: "btn btn-sm #{ controller_name == 'churches' ? 'btn-warning' : 'btn-outline-light' }" do %>
+              <i class="bi bi-building"></i> Churches
+            <% end %>
+            <%= link_to superadmin_users_path, class: "btn btn-sm #{ controller_name == 'users' ? 'btn-warning' : 'btn-outline-light' }" do %>
+              <i class="bi bi-people"></i> Users
+            <% end %>
+            <%= link_to superadmin_moderation_index_path, class: "btn btn-sm #{ controller_name == 'moderation' ? 'btn-warning' : 'btn-outline-light' }" do %>
+              <i class="bi bi-shield-exclamation"></i> Mod Log
+            <% end %>
+            <%= link_to superadmin_telemetry_path, class: "btn btn-sm #{ controller_name == 'telemetry' ? 'btn-warning' : 'btn-outline-light' }" do %>
+              <i class="bi bi-graph-up"></i> Telemetry
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="col-md-10 py-4 px-4">
+          <% if flash[:alert] %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <%= flash[:alert] %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% end %>
+          <% if flash[:notice] %>
+            <div class="alert alert-success alert-dismissible fade show">
+              <%= flash[:notice] %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% end %>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

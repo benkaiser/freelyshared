@@ -1,7 +1,8 @@
 class ItemsController < ApplicationController
   before_action :authenticate_church_member!
   before_action :set_item, only: [ :show, :edit, :update, :destroy, :toggle_availability ]
-  before_action :authorize_owner!, only: [ :edit, :update, :destroy, :toggle_availability ]
+  before_action :authorize_owner!, only: [ :edit, :update, :toggle_availability ]
+  before_action :authorize_owner_or_admin!, only: [ :destroy ]
 
   def index
     @items = current_church.items.includes(:church_member, photo_attachment: :blob)
@@ -41,6 +42,15 @@ class ItemsController < ApplicationController
   end
 
   def destroy
+    unless @item.owner?(current_church_member)
+      ModerationAction.create!(
+        actor: current_church_member,
+        action_type: "remove_item",
+        target_type: "Item",
+        target_id: @item.id,
+        church: @item.church
+      )
+    end
     @item.destroy
     redirect_to items_path, notice: "Item removed."
   end
@@ -59,6 +69,12 @@ class ItemsController < ApplicationController
   def authorize_owner!
     unless @item.owner?(current_church_member)
       redirect_to items_path, alert: "You can only edit your own items."
+    end
+  end
+
+  def authorize_owner_or_admin!
+    unless @item.owner?(current_church_member) || current_church_member&.admin?
+      redirect_to items_path, alert: "You don't have permission to do that."
     end
   end
 

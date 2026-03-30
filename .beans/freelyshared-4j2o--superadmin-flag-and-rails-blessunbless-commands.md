@@ -1,11 +1,11 @@
 ---
 # freelyshared-4j2o
 title: Superadmin flag and Rails bless/unbless commands
-status: todo
+status: completed
 type: task
 priority: critical
 created_at: 2026-03-30T00:41:00Z
-updated_at: 2026-03-30T00:41:00Z
+updated_at: 2026-03-30T01:10:09Z
 parent: freelyshared-03k5
 ---
 

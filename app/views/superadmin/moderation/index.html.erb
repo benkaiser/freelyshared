@@ -1,0 +1,52 @@
+<% content_for :title, "Moderation Log - Superadmin" %>
+
+<h2 class="mb-4"><i class="bi bi-shield-exclamation text-warning me-2"></i>Moderation Log</h2>
+
+<!-- Filters -->
+<div class="mb-3">
+  <%= form_tag superadmin_moderation_index_path, method: :get, class: "row g-2" do %>
+    <div class="col-auto">
+      <select name="action_type" class="form-select form-select-sm">
+        <option value="">All actions</option>
+        <% ModerationAction::ACTION_TYPES.each do |type| %>
+          <option value="<%= type %>" <%= 'selected' if params[:action_type] == type %>><%= type.titleize %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+      <% if params[:action_type].present? || params[:church_id].present? %>
+        <%= link_to "Clear", superadmin_moderation_index_path, class: "btn btn-outline-secondary btn-sm" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <% if @actions.any? %>
+      <div class="list-group list-group-flush">
+        <% @actions.each do |action| %>
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <strong><%= action.actor&.name || "Deleted user" %></strong>
+                <span class="badge bg-secondary ms-1"><%= action.action_type.titleize %></span>
+                <span class="text-muted"><%= action.target_label %></span>
+                <% if action.church %>
+                  &middot; <small><%= link_to action.church.name, superadmin_church_path(action.church), class: "text-decoration-none" %></small>
+                <% end %>
+              </div>
+              <small class="text-muted"><%= action.created_at.strftime("%b %d, %Y %H:%M") %></small>
+            </div>
+            <% if action.reason.present? %>
+              <small class="text-muted"><i class="bi bi-chat-left-text me-1"></i><%= action.reason %></small>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted p-3 mb-0">No moderation actions recorded.</p>
+    <% end %>
+  </div>
+</div>

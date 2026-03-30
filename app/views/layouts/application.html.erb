@@ -22,6 +22,16 @@
   </head>
 
   <body class="d-flex flex-column min-vh-100">
+    <!-- Impersonation Banner -->
+    <% if session[:superadmin_id].present? %>
+      <div class="bg-warning text-dark text-center py-2 fw-bold">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        You are impersonating <%= current_church_member&.name %>
+        &mdash;
+        <%= button_to "Stop Impersonating", superadmin_stop_impersonating_path, method: :post, class: "btn btn-sm btn-dark ms-2" %>
+      </div>
+    <% end %>
+
     <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container">

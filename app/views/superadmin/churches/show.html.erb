@@ -1,0 +1,125 @@
+<% content_for :title, "#{@church.name} - Superadmin" %>
+
+<%= link_to superadmin_churches_path, class: "text-decoration-none" do %>
+  <i class="bi bi-arrow-left me-1"></i>All Churches
+<% end %>
+
+<div class="d-flex justify-content-between align-items-start mt-2 mb-4">
+  <div>
+    <h2>
+      <%= @church.name %>
+      <% if @church.archived? %><span class="badge bg-secondary">Archived</span><% end %>
+    </h2>
+    <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i><%= @church.location_name %></p>
+  </div>
+  <div class="d-flex gap-2">
+    <% if @church.status == "pending" %>
+      <%= button_to "Activate", activate_superadmin_church_path(@church), method: :post, class: "btn btn-success", data: { turbo_confirm: "Activate #{@church.name} without member threshold?" } %>
+    <% end %>
+    <% if @church.archived? %>
+      <%= button_to "Unarchive", unarchive_superadmin_church_path(@church), method: :post, class: "btn btn-outline-success" %>
+    <% else %>
+      <%= button_to "Archive", archive_superadmin_church_path(@church), method: :post, class: "btn btn-outline-danger", data: { turbo_confirm: "Archive #{@church.name}? It will be hidden from search." } %>
+    <% end %>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @members.approved.count %></h4><small class="text-muted">Members</small></div></div></div>
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @items_count %></h4><small class="text-muted">Items</small></div></div></div>
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @services_count %></h4><small class="text-muted">Services</small></div></div></div>
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @needs_count %></h4><small class="text-muted">Needs</small></div></div></div>
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @borrows_completed %></h4><small class="text-muted">Borrows Done</small></div></div></div>
+  <div class="col-4 col-lg-2"><div class="card text-center border-0 shadow-sm"><div class="card-body py-2"><h4 class="mb-0"><%= @church.status %></h4><small class="text-muted">Status</small></div></div></div>
+</div>
+
+<!-- Settings -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0"><i class="bi bi-gear me-2"></i>Settings</h5></div>
+  <div class="card-body">
+    <%= form_with url: update_settings_superadmin_church_path(@church), method: :patch, local: true do %>
+      <div class="form-check form-switch">
+        <input type="hidden" name="require_admin_approval" value="0">
+        <input type="checkbox" name="require_admin_approval" value="1" class="form-check-input" id="require_admin_approval" <%= "checked" if @church.require_admin_approval? %>>
+        <label class="form-check-label" for="require_admin_approval"><strong>Require admin approval for new members</strong></label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm mt-2"><i class="bi bi-check me-1"></i>Save</button>
+    <% end %>
+  </div>
+</div>
+
+<!-- Pending Members -->
+<% if @pending_members.any? %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-warning text-dark">
+    <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Pending Members (<%= @pending_members.count %>)</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      <% @pending_members.each do |member| %>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong><%= link_to member.name, superadmin_user_path(member), class: "text-decoration-none" %></strong>
+            <br><small class="text-muted"><%= member.email %> &middot; <%= time_ago_in_words(member.created_at) %> ago</small>
+          </div>
+          <%= button_to "Approve", approve_member_superadmin_church_path(@church, member_id: member.id), method: :post, class: "btn btn-success btn-sm" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>
+
+<!-- Members -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0"><i class="bi bi-people me-2"></i>Members (<%= @members.approved.count %>)</h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      <% @members.approved.each do |member| %>
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong><%= link_to member.name, superadmin_user_path(member), class: "text-decoration-none" %></strong>
+            <% if member.admin? %><span class="badge bg-primary ms-1">Admin</span><% end %>
+            <% if member.superadmin? %><span class="badge bg-dark ms-1">Superadmin</span><% end %>
+            <% if member.suspended? %><span class="badge bg-danger ms-1">Suspended</span><% end %>
+            <br><small class="text-muted"><%= member.email %></small>
+          </div>
+          <div class="d-flex gap-1">
+            <% if member.admin? %>
+              <%= button_to demote_admin_superadmin_church_path(@church, member_id: member.id), method: :post, class: "btn btn-outline-warning btn-sm" do %>
+                <i class="bi bi-shield-x"></i> Demote
+              <% end %>
+            <% else %>
+              <%= button_to promote_admin_superadmin_church_path(@church, member_id: member.id), method: :post, class: "btn btn-outline-primary btn-sm" do %>
+                <i class="bi bi-shield-plus"></i> Promote
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Moderation Actions -->
+<% if @recent_moderation.any? %>
+<div class="card shadow-sm">
+  <div class="card-header"><h5 class="mb-0"><i class="bi bi-shield-exclamation me-2"></i>Recent Moderation Actions</h5></div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush">
+      <% @recent_moderation.each do |action| %>
+        <div class="list-group-item py-2">
+          <strong><%= action.actor&.name || "Unknown" %></strong>
+          <span class="badge bg-secondary"><%= action.action_type %></span>
+          <span class="text-muted"><%= action.target_label %></span>
+          <% if action.reason.present? %><br><small class="text-muted">Reason: <%= action.reason %></small><% end %>
+          <small class="text-muted float-end"><%= time_ago_in_words(action.created_at) %> ago</small>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>

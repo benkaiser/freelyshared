@@ -38,6 +38,8 @@
               <li><%= button_to "Delete", @item, method: :delete, class: "dropdown-item text-danger", data: { turbo_confirm: "Are you sure?" } %></li>
             </ul>
           </div>
+        <% elsif current_church_member&.admin? %>
+          <%= button_to "Remove (Admin)", @item, method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "Remove this item as church admin?" } %>
         <% end %>
       </div>
 
@@ -54,15 +56,15 @@
 
       <div class="card bg-light border-0 mb-3">
         <div class="card-body p-3">
-          <div class="d-flex align-items-center">
+          <%= link_to member_path(@item.church_member), class: "d-flex align-items-center text-decoration-none" do %>
             <img src="<%= @item.church_member.avatar_url(40) %>" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;" alt="">
             <div>
-              <strong><%= @item.church_member.name %></strong>
+              <strong class="text-dark"><%= @item.church_member.name %></strong>
               <% if @item.church_member.phone.present? %>
                 <br><small class="text-muted"><i class="bi bi-phone me-1"></i><%= @item.church_member.phone %></small>
               <% end %>
             </div>
-          </div>
+          <% end %>
         </div>
       </div>
 

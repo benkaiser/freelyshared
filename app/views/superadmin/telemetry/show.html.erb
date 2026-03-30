@@ -1,0 +1,141 @@
+<% content_for :title, "Telemetry - Superadmin" %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2><i class="bi bi-graph-up text-success me-2"></i>Telemetry</h2>
+  <div class="btn-group btn-group-sm">
+    <%= link_to "7 days", superadmin_telemetry_path(days: 7), class: "btn #{ @days == 7 ? 'btn-primary' : 'btn-outline-primary' }" %>
+    <%= link_to "30 days", superadmin_telemetry_path(days: 30), class: "btn #{ @days == 30 ? 'btn-primary' : 'btn-outline-primary' }" %>
+    <%= link_to "90 days", superadmin_telemetry_path(days: 90), class: "btn #{ @days == 90 ? 'btn-primary' : 'btn-outline-primary' }" %>
+  </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-4 col-lg-3">
+    <div class="card text-center border-0 shadow-sm">
+      <div class="card-body">
+        <h3 class="mb-0 text-primary"><%= @active_users %></h3>
+        <small class="text-muted">Active Users (<%= @days %>d)</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 col-lg-3">
+    <div class="card text-center border-0 shadow-sm">
+      <div class="card-body">
+        <h3 class="mb-0 text-success"><%= @total_logins %></h3>
+        <small class="text-muted">Total Logins</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 col-lg-3">
+    <div class="card text-center border-0 shadow-sm">
+      <div class="card-body">
+        <h3 class="mb-0 text-info"><%= @total_page_views %></h3>
+        <small class="text-muted">Page Views</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 col-lg-3">
+    <div class="card text-center border-0 shadow-sm">
+      <div class="card-body">
+        <h3 class="mb-0 text-warning"><%= @home_views %></h3>
+        <small class="text-muted">Home Page Views</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts using CSS bars -->
+<div class="row g-4">
+  <!-- Logins Over Time -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0"><i class="bi bi-box-arrow-in-right me-2"></i>Logins</h5></div>
+      <div class="card-body">
+        <% if @logins.any? %>
+          <% max_val = [@logins.values.max, 1].max %>
+          <% @logins.sort.last(14).each do |date, count| %>
+            <div class="d-flex align-items-center mb-1">
+              <small class="text-muted" style="width: 70px;"><%= date.strftime("%b %d") %></small>
+              <div class="flex-grow-1 me-2">
+                <div class="bg-primary rounded" style="height: 18px; width: <%= (count.to_f / max_val * 100).round %>%;"></div>
+              </div>
+              <small class="text-muted" style="width: 30px; text-align: right;"><%= count %></small>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">No login data yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Views Over Time -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0"><i class="bi bi-eye me-2"></i>Page Views</h5></div>
+      <div class="card-body">
+        <% if @page_views.any? %>
+          <% max_val = [@page_views.values.max, 1].max %>
+          <% @page_views.sort.last(14).each do |date, count| %>
+            <div class="d-flex align-items-center mb-1">
+              <small class="text-muted" style="width: 70px;"><%= date.strftime("%b %d") %></small>
+              <div class="flex-grow-1 me-2">
+                <div class="bg-info rounded" style="height: 18px; width: <%= (count.to_f / max_val * 100).round %>%;"></div>
+              </div>
+              <small class="text-muted" style="width: 30px; text-align: right;"><%= count %></small>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">No page view data yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Sections Breakdown -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Page Views by Section</h5></div>
+      <div class="card-body">
+        <% if @page_sections.any? %>
+          <% max_val = [@page_sections.first&.last || 1, 1].max %>
+          <% @page_sections.each do |section, count| %>
+            <div class="d-flex align-items-center mb-2">
+              <small class="text-muted" style="width: 100px;"><%= section.to_s.titleize %></small>
+              <div class="flex-grow-1 me-2">
+                <div class="bg-success rounded" style="height: 18px; width: <%= (count.to_f / max_val * 100).round %>%;"></div>
+              </div>
+              <small class="text-muted" style="width: 40px; text-align: right;"><%= count %></small>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">No section data yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Emails & Push -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0"><i class="bi bi-send me-2"></i>Communications</h5></div>
+      <div class="card-body">
+        <div class="d-flex justify-content-around text-center">
+          <div>
+            <h4 class="mb-0"><%= TelemetryEvent.of_type("email_sent").since(@days.days.ago).count %></h4>
+            <small class="text-muted">Emails Sent</small>
+          </div>
+          <div>
+            <h4 class="mb-0"><%= TelemetryEvent.of_type("push_notification_sent").since(@days.days.ago).count %></h4>
+            <small class="text-muted">Push Notifications</small>
+          </div>
+          <div>
+            <h4 class="mb-0"><%= TelemetryEvent.of_type("password_reset_requested").since(@days.days.ago).count %></h4>
+            <small class="text-muted">Password Resets</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

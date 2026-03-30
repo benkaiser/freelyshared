@@ -1,0 +1,119 @@
+<% content_for :title, "Superadmin Dashboard - FreelyShared" %>
+
+<h2 class="mb-4"><i class="bi bi-speedometer2 text-warning me-2"></i>Dashboard</h2>
+
+<!-- Global Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="mb-0 text-primary"><%= @total_churches %></h3>
+        <small class="text-muted">Churches</small>
+        <div class="mt-1">
+          <span class="badge bg-success"><%= @ready_churches %> ready</span>
+          <span class="badge bg-warning text-dark"><%= @pending_churches %> pending</span>
+          <% if @archived_churches > 0 %><span class="badge bg-secondary"><%= @archived_churches %> archived</span><% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="mb-0 text-success"><%= @approved_members %></h3>
+        <small class="text-muted">Members (<%= @total_members %> total)</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="mb-0 text-info"><%= @available_items %></h3>
+        <small class="text-muted">Available Items (<%= @total_items %> total)</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="mb-0 text-warning"><%= @borrows_completed %></h3>
+        <small class="text-muted">Borrows Completed</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="mb-0"><%= @total_services %></h3>
+        <small class="text-muted">Services Offered</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="mb-0"><%= @total_needs %></h3>
+        <small class="text-muted">Needs Posted</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Pending Churches -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Pending Churches</h5>
+        <%= link_to superadmin_churches_path, class: "btn btn-sm btn-dark" do %>View All<% end %>
+      </div>
+      <div class="card-body p-0">
+        <% if @pending_churches_list.any? %>
+          <div class="list-group list-group-flush">
+            <% @pending_churches_list.each do |church| %>
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong><%= link_to church.name, superadmin_church_path(church), class: "text-decoration-none" %></strong>
+                  <br><small class="text-muted"><%= church.location_name %> &middot; <%= church.church_members.approved.count %>/5 members</small>
+                </div>
+                <%= button_to "Activate", activate_superadmin_church_path(church), method: :post, class: "btn btn-success btn-sm", data: { turbo_confirm: "Activate #{church.name} without 5 members?" } %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-muted p-3 mb-0"><i class="bi bi-check-circle text-success me-1"></i>No pending churches.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Members -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Recent Signups</h5>
+        <%= link_to superadmin_users_path, class: "btn btn-sm btn-light" do %>View All<% end %>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          <% @recent_members.each do |member| %>
+            <div class="list-group-item py-2">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong><%= link_to member.name, superadmin_user_path(member), class: "text-decoration-none" %></strong>
+                  <% if member.pending_approval? %><span class="badge bg-warning text-dark ms-1">pending</span><% end %>
+                  <% if member.suspended? %><span class="badge bg-danger ms-1">suspended</span><% end %>
+                  <br><small class="text-muted"><%= member.email %> &middot; <%= member.church.name %></small>
+                </div>
+                <small class="text-muted"><%= time_ago_in_words(member.created_at) %> ago</small>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_30_004830) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_30_005732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,6 +78,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_004830) do
     t.boolean "show_in_directory", default: true
     t.boolean "admin", default: false, null: false
     t.string "approval_status", default: "approved", null: false
+    t.boolean "superadmin", default: false, null: false
+    t.boolean "suspended", default: false, null: false
+    t.datetime "suspended_at"
     t.index ["church_id", "approval_status"], name: "index_church_members_on_church_id_and_approval_status"
     t.index ["church_id"], name: "index_church_members_on_church_id"
     t.index ["email"], name: "index_church_members_on_email", unique: true
@@ -98,6 +101,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_004830) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "require_admin_approval", default: false, null: false
+    t.boolean "archived", default: false, null: false
+    t.datetime "archived_at"
     t.index ["latitude", "longitude"], name: "index_churches_on_latitude_and_longitude"
     t.index ["name"], name: "index_churches_on_name"
     t.index ["status"], name: "index_churches_on_status"
@@ -117,6 +122,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_004830) do
     t.index ["church_id", "available"], name: "index_items_on_church_id_and_available"
     t.index ["church_id"], name: "index_items_on_church_id"
     t.index ["church_member_id"], name: "index_items_on_church_member_id"
+  end
+
+  create_table "moderation_actions", force: :cascade do |t|
+    t.bigint "actor_id", null: false
+    t.string "action_type", null: false
+    t.string "target_type", null: false
+    t.bigint "target_id", null: false
+    t.text "reason"
+    t.bigint "church_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action_type"], name: "index_moderation_actions_on_action_type"
+    t.index ["actor_id"], name: "index_moderation_actions_on_actor_id"
+    t.index ["church_id"], name: "index_moderation_actions_on_church_id"
+    t.index ["target_type", "target_id"], name: "index_moderation_actions_on_target_type_and_target_id"
   end
 
   create_table "needs", force: :cascade do |t|
@@ -163,6 +183,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_004830) do
     t.index ["church_member_id"], name: "index_services_listings_on_church_member_id"
   end
 
+  create_table "telemetry_events", force: :cascade do |t|
+    t.string "event_type", null: false
+    t.bigint "church_id"
+    t.bigint "church_member_id"
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.index ["church_id", "event_type", "created_at"], name: "idx_telemetry_church_type_time"
+    t.index ["church_id"], name: "index_telemetry_events_on_church_id"
+    t.index ["church_member_id"], name: "index_telemetry_events_on_church_member_id"
+    t.index ["created_at"], name: "index_telemetry_events_on_created_at"
+    t.index ["event_type", "created_at"], name: "index_telemetry_events_on_event_type_and_created_at"
+    t.index ["event_type"], name: "index_telemetry_events_on_event_type"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "borrow_requests", "church_members", column: "requester_id"
@@ -170,9 +204,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_004830) do
   add_foreign_key "church_members", "churches"
   add_foreign_key "items", "church_members"
   add_foreign_key "items", "churches"
+  add_foreign_key "moderation_actions", "church_members", column: "actor_id"
+  add_foreign_key "moderation_actions", "churches"
   add_foreign_key "needs", "church_members"
   add_foreign_key "needs", "churches"
   add_foreign_key "push_subscriptions", "church_members"
   add_foreign_key "services_listings", "church_members"
   add_foreign_key "services_listings", "churches"
+  add_foreign_key "telemetry_events", "church_members"
+  add_foreign_key "telemetry_events", "churches"
 end

@@ -41,13 +41,13 @@
             <% end %>
           </div>
 
-          <div class="d-flex align-items-center mb-3">
+          <%= link_to member_path(@need.church_member), class: "d-flex align-items-center mb-3 text-decoration-none" do %>
             <img src="<%= @need.church_member.avatar_url(48) %>" class="rounded-circle me-3" width="48" height="48" style="object-fit: cover;" alt="">
             <div>
-              <strong><%= @need.church_member.name %></strong>
+              <strong class="text-dark"><%= @need.church_member.name %></strong>
               <br><small class="text-muted">Posted <%= time_ago_in_words(@need.created_at) %> ago</small>
             </div>
-          </div>
+          <% end %>
 
           <% if @need.description.present? %>
             <div class="mb-3">

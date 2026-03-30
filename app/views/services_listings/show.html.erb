@@ -28,10 +28,10 @@
             <% end %>
           </div>
 
-          <div class="d-flex align-items-center mb-3">
+          <%= link_to member_path(@service.church_member), class: "d-flex align-items-center mb-3 text-decoration-none" do %>
             <img src="<%= @service.church_member.avatar_url(48) %>" class="rounded-circle me-3" width="48" height="48" style="object-fit: cover;" alt="">
             <div>
-              <strong><%= @service.church_member.name %></strong>
+              <strong class="text-dark"><%= @service.church_member.name %></strong>
               <% if @service.church_member.phone.present? %>
                 <br><small class="text-muted"><i class="bi bi-phone me-1"></i><%= @service.church_member.phone %></small>
               <% end %>
@@ -39,7 +39,7 @@
                 <br><small class="text-muted"><i class="bi bi-envelope me-1"></i><%= @service.church_member.email %></small>
               <% end %>
             </div>
-          </div>
+          <% end %>
 
           <% if @service.description.present? %>
             <div class="mb-3">

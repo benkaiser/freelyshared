@@ -1,11 +1,11 @@
 ---
 # freelyshared-kubp
 title: Remove dead geographic signups code
-status: in-progress
+status: completed
 type: task
 priority: low
 created_at: 2026-03-30T00:47:14Z
-updated_at: 2026-03-30T00:47:43Z
+updated_at: 2026-03-30T00:51:47Z
 parent: freelyshared-03k5
 ---
 

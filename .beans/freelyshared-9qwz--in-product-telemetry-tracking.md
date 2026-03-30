@@ -1,11 +1,11 @@
 ---
 # freelyshared-9qwz
 title: In-product telemetry tracking
-status: todo
+status: completed
 type: feature
 priority: high
 created_at: 2026-03-30T00:41:40Z
-updated_at: 2026-03-30T00:41:40Z
+updated_at: 2026-03-30T01:10:09Z
 parent: freelyshared-03k5
 ---
 
