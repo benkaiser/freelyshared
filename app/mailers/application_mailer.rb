@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "from@example.com"
+  default from: ENV.fetch("MAILER_SENDER", "FreelyShared <contact@freelyshared.org>")
   layout "mailer"
 
   after_deliver :track_email_sent
