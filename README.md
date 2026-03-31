@@ -1,5 +1,7 @@
 # FreelyShared
 
+**[freelyshared.org](https://freelyshared.org)**
+
 A church-based sharing platform where members can lend goods, offer skills, and post needs within their congregation. Inspired by Acts 4:32: *"They shared everything they had."*
 
 ## What it does
