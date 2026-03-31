@@ -41,7 +41,7 @@ class Superadmin::UsersController < Superadmin::BaseController
     user = ChurchMember.find(params[:id])
     session[:superadmin_id] = current_church_member.id
     sign_in(:church_member, user)
-    redirect_to items_path, notice: "You are now impersonating #{user.name}."
+    redirect_to dashboard_path, notice: "You are now impersonating #{user.name}."
   end
 
   def stop_impersonating

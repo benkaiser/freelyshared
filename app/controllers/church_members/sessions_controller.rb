@@ -8,7 +8,7 @@ class ChurchMembers::SessionsController < Devise::SessionsController
     # Set the current church in session on login
     default_church = resource.church || resource.approved_churches.first
     session[:current_church_id] = default_church&.id
-    items_path
+    dashboard_path
   end
 
   def after_sign_out_path_for(resource_or_scope)

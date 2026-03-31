@@ -80,4 +80,15 @@ class Church < ApplicationRecord
       end
     end
   end
+
+  # Email rate limiting: only send one notification email per type per church per 24 hours
+  def can_send_email_notification?(type)
+    column = "last_#{type}_email_sent_at"
+    last_sent = self[column]
+    last_sent.nil? || last_sent < 24.hours.ago
+  end
+
+  def record_email_notification_sent!(type)
+    update_column("last_#{type}_email_sent_at", Time.current)
+  end
 end

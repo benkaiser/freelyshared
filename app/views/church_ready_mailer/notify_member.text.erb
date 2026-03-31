@@ -2,9 +2,13 @@ Hi <%= @member.name %>,
 
 Great news! <%= @church.name %> is now active on FreelyShared!
 
-Your church community has reached 5 members and is now active. You and your church family can soon start sharing goods and offering your skills to serve one another.
+Your church community is ready to start sharing goods and offering skills to serve one another.
 
-We'll be in touch with next steps as the sharing platform launches. In the meantime, keep spreading the word to other members of <%= @church.name %>.
+Sign in now to get started:
+<%= new_church_member_session_url %>
+
+Spread the word! Invite other members of <%= @church.name %> to join at:
+<%= church_url(@church) %>
 
 "All the believers were one in heart and mind. No one claimed that any of their possessions was their own, but they shared everything they had." — Acts 4:32
 

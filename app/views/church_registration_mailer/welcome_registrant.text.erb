@@ -1,0 +1,16 @@
+Hi <%= @member.name %>,
+
+Welcome to FreelyShared! You've successfully registered <%= @church.name %> as a sharing community.
+
+Next step: invite your church members to join! Share the link below with your congregation:
+
+<%= @join_url %>
+
+<% if @church.members_needed > 0 %>
+Your church needs <%= @church.members_needed %> more members to activate. Once you reach 5 members, everyone will be notified and the sharing platform will go live!
+<% end %>
+
+"All the believers were one in heart and mind. No one claimed that any of their possessions was their own, but they shared everything they had." — Acts 4:32
+
+--
+FreelyShared — Share Freely. Love Generously.

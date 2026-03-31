@@ -39,6 +39,9 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "example.com" }
 
+  # Use inline job processing so deliver_later works synchronously in tests.
+  config.active_job.queue_adapter = :inline
+
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 

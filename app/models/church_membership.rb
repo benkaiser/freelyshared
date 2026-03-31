@@ -9,7 +9,8 @@ class ChurchMembership < ApplicationRecord
   scope :pending_approval, -> { where(approval_status: "pending") }
   scope :admins, -> { where(admin: true).approved }
 
-  after_save :check_church_ready, if: -> { saved_change_to_approval_status? && approved? }
+  after_create :check_church_ready_on_create
+  after_update :check_church_ready_on_approval, if: -> { saved_change_to_approval_status? && approved? }
 
   def approved?
     approval_status == "approved"
@@ -21,7 +22,11 @@ class ChurchMembership < ApplicationRecord
 
   private
 
-  def check_church_ready
+  def check_church_ready_on_create
+    church.check_ready! if approved?
+  end
+
+  def check_church_ready_on_approval
     church.check_ready!
   end
 end

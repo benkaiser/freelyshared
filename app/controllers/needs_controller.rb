@@ -19,6 +19,7 @@ class NeedsController < ApplicationController
 
     if @need.save
       NotificationService.notify_new_need(@need)
+      NotificationService.email_notify_new_need(@need)
       redirect_to needs_path, notice: "Need posted! Your church community will see it."
     else
       render :new, status: :unprocessable_entity

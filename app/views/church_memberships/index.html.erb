@@ -27,7 +27,12 @@
                       <span class="badge bg-info ms-1">Current</span>
                     <% end %>
                   </div>
-                  <div class="d-flex gap-2">
+                  <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-outline-secondary btn-sm" type="button"
+                            onclick="navigator.clipboard.writeText('<%= "#{app_url}/churches/#{membership.church_id}" %>'); this.innerHTML='<i class=\'bi bi-check-lg\'></i>'; setTimeout(() => this.innerHTML='<i class=\'bi bi-share\'></i>', 2000)"
+                            title="Copy sign-up link">
+                      <i class="bi bi-share"></i>
+                    </button>
                     <% unless membership.church_id == current_church&.id %>
                       <%= button_to "Switch", switch_church_path(church_id: membership.church_id), method: :post, class: "btn btn-outline-primary btn-sm" %>
                     <% end %>

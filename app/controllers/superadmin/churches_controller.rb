@@ -20,8 +20,19 @@ class Superadmin::ChurchesController < Superadmin::BaseController
   def activate
     church = Church.find(params[:id])
     church.update!(status: "ready", ready_at: Time.current)
+    # Notify all approved members that the church is now active
+    church.approved_members.each do |member|
+      ChurchReadyMailer.notify_member(church, member).deliver_later
+    end
     log_moderation("activate_church", church)
     redirect_to superadmin_church_path(church), notice: "#{church.name} has been activated."
+  end
+
+  def deactivate
+    church = Church.find(params[:id])
+    church.update!(status: "pending", ready_at: nil)
+    log_moderation("deactivate_church", church)
+    redirect_to superadmin_church_path(church), notice: "#{church.name} has been set back to pending."
   end
 
   def archive

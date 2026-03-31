@@ -3,9 +3,6 @@ class ProfilesController < ApplicationController
 
   def show
     @member = current_church_member
-    @items = @member.items.order(created_at: :desc)
-    @services = @member.services_listings.order(created_at: :desc)
-    @needs = @member.needs.order(created_at: :desc)
     @incoming_pending = BorrowRequest.pending
       .joins(:item)
       .includes(:requester, item: :church_member)

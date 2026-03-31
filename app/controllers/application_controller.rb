@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  helper_method :current_church, :current_membership, :impersonating?, :pending_borrow_requests_count
+  helper_method :current_church, :current_membership, :impersonating?, :pending_borrow_requests_count, :app_url
 
   after_action :track_page_view
 
@@ -59,6 +59,10 @@ class ApplicationController < ActionController::Base
     else
       0
     end
+  end
+
+  def app_url
+    ENV.fetch("APP_URL", "http://localhost:8888")
   end
 
   def authenticate_member!

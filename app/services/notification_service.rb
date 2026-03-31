@@ -50,6 +50,26 @@ class NotificationService
       )
     end
 
+    # Email notifications (rate-limited per church per 24h)
+    def email_notify_new_need(need)
+      member = need.church_member
+      church_ids = member.church_memberships.approved.pluck(:church_id)
+
+      Church.where(id: church_ids).find_each do |church|
+        next unless church.can_send_email_notification?(:need)
+
+        recipients = church.approved_members
+          .where(email_notify_new_needs: true)
+          .where.not(id: member.id)
+
+        recipients.find_each do |recipient|
+          NeedNotificationMailer.new_need_posted(recipient, need, church).deliver_later
+        end
+
+        church.record_email_notification_sent!(:need)
+      end
+    end
+
     private
 
     # Send notifications to all members of all churches the given member belongs to

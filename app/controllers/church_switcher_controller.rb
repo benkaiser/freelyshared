@@ -9,9 +9,9 @@ class ChurchSwitcherController < ApplicationController
       # Clear memoized values
       @current_church = nil
       @current_membership = nil
-      redirect_to items_path, notice: "Switched to #{church.name}."
+      redirect_to dashboard_path, notice: "Switched to #{church.name}."
     else
-      redirect_to items_path, alert: "You are not a member of that church."
+      redirect_to dashboard_path, alert: "You are not a member of that church."
     end
   end
 end

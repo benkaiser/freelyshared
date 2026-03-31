@@ -15,6 +15,8 @@
   <div class="d-flex gap-2">
     <% if @church.status == "pending" %>
       <%= button_to "Activate", activate_superadmin_church_path(@church), method: :post, class: "btn btn-success", data: { turbo_confirm: "Activate #{@church.name} without member threshold?" } %>
+    <% else %>
+      <%= button_to "Deactivate", deactivate_superadmin_church_path(@church), method: :post, class: "btn btn-outline-warning", data: { turbo_confirm: "Set #{@church.name} back to pending?" } %>
     <% end %>
     <% if @church.archived? %>
       <%= button_to "Unarchive", unarchive_superadmin_church_path(@church), method: :post, class: "btn btn-outline-success" %>

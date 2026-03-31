@@ -1,0 +1,128 @@
+<% content_for :title, "Home - FreelyShared" %>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Welcome -->
+      <div class="mb-4">
+        <h2>Welcome back, <%= @member.name.split.first %>!</h2>
+        <p class="text-muted mb-0">
+          <i class="bi bi-building me-1"></i><%= @church.name %>
+        </p>
+      </div>
+
+      <!-- Pending Borrow Requests Alert -->
+      <% if @incoming_pending.any? %>
+        <div class="card border-danger shadow-sm mb-4">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <i class="bi bi-hand-index text-danger me-2"></i>
+                <strong>You have <%= @incoming_pending.count %> pending borrow <%= @incoming_pending.count == 1 ? 'request' : 'requests' %></strong>
+              </div>
+              <%= link_to my_borrow_requests_path, class: "btn btn-danger btn-sm" do %>
+                View Requests <i class="bi bi-chevron-right ms-1"></i>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Recent Items -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0"><i class="bi bi-box-seam text-primary me-2"></i>Recent Items</h4>
+          <%= link_to items_path, class: "btn btn-outline-primary btn-sm" do %>
+            Browse All <i class="bi bi-chevron-right ms-1"></i>
+          <% end %>
+        </div>
+        <% if @recent_items.any? %>
+          <div class="d-flex gap-3 overflow-auto pb-2" style="scroll-snap-type: x mandatory;">
+            <% @recent_items.each do |item| %>
+              <%= link_to item, class: "text-decoration-none flex-shrink-0", style: "width: 160px; scroll-snap-align: start;" do %>
+                <div class="card listing-card h-100">
+                  <% if item.photo.attached? %>
+                    <%= image_tag item.photo_thumbnail, class: "card-img-top", style: "height: 100px; object-fit: cover;" %>
+                  <% else %>
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 100px;">
+                      <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                    </div>
+                  <% end %>
+                  <div class="card-body p-2">
+                    <h6 class="card-title mb-0 text-dark small"><%= truncate(item.title, length: 25) %></h6>
+                    <small>
+                      <span class="availability-dot <%= item.available? ? 'available' : 'unavailable' %>"></span>
+                      <span class="text-muted"><%= item.available? ? 'Available' : 'Unavailable' %></span>
+                    </small>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-muted">No items shared yet. <%= link_to "List the first item!", new_item_path %></p>
+        <% end %>
+      </div>
+
+      <!-- Recent Needs -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0"><i class="bi bi-hand-thumbs-up text-primary me-2"></i>Open Needs</h4>
+          <%= link_to needs_path, class: "btn btn-outline-primary btn-sm" do %>
+            View All <i class="bi bi-chevron-right ms-1"></i>
+          <% end %>
+        </div>
+        <% if @recent_needs.any? %>
+          <% @recent_needs.each do |need| %>
+            <%= link_to need, class: "text-decoration-none" do %>
+              <div class="card listing-card mb-2">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="text-dark mb-1"><%= need.title %></h6>
+                      <small class="text-muted">
+                        <i class="bi bi-person me-1"></i><%= need.church_member.name %>
+                        <span class="ms-2"><i class="bi bi-clock me-1"></i><%= time_ago_in_words(need.created_at) %> ago</span>
+                      </small>
+                    </div>
+                    <span class="badge bg-success">Open</span>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        <% else %>
+          <p class="text-muted">No open needs right now. <%= link_to "Post a need", new_need_path %> if you need help!</p>
+        <% end %>
+      </div>
+
+      <!-- Services -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="mb-0"><i class="bi bi-tools text-primary me-2"></i>Services Offered</h4>
+          <%= link_to services_path, class: "btn btn-outline-primary btn-sm" do %>
+            View All <i class="bi bi-chevron-right ms-1"></i>
+          <% end %>
+        </div>
+        <% if @recent_services.any? %>
+          <div class="row g-2">
+            <% @recent_services.each do |service| %>
+              <div class="col-6 col-md-4">
+                <%= link_to service_path(service), class: "text-decoration-none" do %>
+                  <div class="card listing-card h-100">
+                    <div class="card-body p-3">
+                      <h6 class="text-dark mb-1"><%= service.title %></h6>
+                      <small class="text-muted"><i class="bi bi-person me-1"></i><%= service.church_member.name %></small>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-muted">No services offered yet. <%= link_to "Offer your skills!", new_service_path %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -58,7 +58,8 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("MAILER_HOST", "freelyshared.org"), protocol: "https" }
+  app_url = URI.parse(ENV.fetch("APP_URL", "https://freelyshared.org"))
+  config.action_mailer.default_url_options = { host: app_url.host, port: app_url.port == app_url.default_port ? nil : app_url.port, protocol: app_url.scheme }
 
   # Outgoing SMTP server via environment variables
   if ENV["SMTP_ADDRESS"].present?

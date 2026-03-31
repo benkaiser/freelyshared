@@ -1,0 +1,46 @@
+<p>Hi <%= @member.name %>,</p>
+
+<p>
+  Welcome to FreelyShared! You've successfully registered
+  <strong><%= @church.name %></strong> as a sharing community.
+</p>
+
+<p>
+  <strong>Next step:</strong> invite your church members to join! Share the link
+  below with your congregation — at church, in your group chat, newsletter, or
+  on the noticeboard:
+</p>
+
+<p style="text-align: center; margin: 24px 0;">
+  <a href="<%= @join_url %>" class="btn">Join <%= @church.name %></a>
+</p>
+
+<p style="text-align: center; color: #6c757d; font-size: 14px;">
+  Or share this link directly:<br>
+  <a href="<%= @join_url %>"><%= @join_url %></a>
+</p>
+
+<p style="text-align: center; margin: 24px 0;">
+  <strong>Scan to join:</strong><br>
+  <img src="<%= @qr_url %>" alt="QR code to join <%= @church.name %>" width="200" height="200" style="margin-top: 12px; border-radius: 8px;">
+</p>
+
+<p style="background: #f8f9fa; padding: 16px; border-radius: 8px; font-size: 14px;">
+  <strong>Tip:</strong> Print the QR code above and put it on your church noticeboard
+  or include it in your weekly bulletin. People can scan it with their phone camera
+  to go straight to the sign-up page.
+</p>
+
+<% if @church.members_needed > 0 %>
+<p>
+  Your church needs <strong><%= @church.members_needed %> more members</strong> to
+  activate. Once you reach 5 members, everyone will be notified and the sharing
+  platform will go live!
+</p>
+<% end %>
+
+<p style="text-align: center; margin: 24px 0; color: #6c757d;">
+  <em>"All the believers were one in heart and mind. No one claimed that any of their
+  possessions was their own, but they shared everything they had."</em><br>
+  <strong>— Acts 4:32</strong>
+</p>

@@ -1,40 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #0d6efd, #6f42c1); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
-    .btn { display: inline-block; background: #198754; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; }
-    .footer { text-align: center; margin-top: 20px; color: #6c757d; font-size: 14px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🎉 Great News!</h1>
-      <p><%= @church.name %> is now active on FreelyShared!</p>
-    </div>
-    <div class="content">
-      <p>Hi <%= @member.name %>,</p>
-      <p>
-        Your church community on FreelyShared has reached 5 members and is now <strong>active</strong>!
-        You and your church family can soon start sharing goods and offering your skills to serve one another.
-      </p>
-      <p>
-        We'll be in touch with next steps as the sharing platform launches. In the meantime,
-        keep spreading the word to other members of <%= @church.name %>.
-      </p>
-      <p style="text-align: center; margin: 30px 0;">
-        <em>"All the believers were one in heart and mind. No one claimed that any of their possessions
-        was their own, but they shared everything they had."</em><br>
-        <strong>— Acts 4:32</strong>
-      </p>
-    </div>
-    <div class="footer">
-      <p>FreelyShared — Share Freely. Love Generously.</p>
-    </div>
-  </div>
-</body>
-</html>
+<p>Hi <%= @member.name %>,</p>
+
+<p>
+  Great news! <strong><%= @church.name %></strong> is now <strong>active</strong> on FreelyShared!
+  Your church community is ready to start sharing goods and offering skills to serve one another.
+</p>
+
+<p>Sign in now to browse what's available, list items to share, or offer your skills:</p>
+
+<p style="text-align: center;">
+  <a href="<%= new_church_member_session_url %>" class="btn">Sign In to FreelyShared</a>
+</p>
+
+<p>
+  Spread the word! Invite other members of <%= @church.name %> to join at:<br>
+  <a href="<%= church_url(@church) %>"><%= church_url(@church) %></a>
+</p>
+
+<p style="text-align: center; margin: 24px 0; color: #6c757d;">
+  <em>"All the believers were one in heart and mind. No one claimed that any of their
+  possessions was their own, but they shared everything they had."</em><br>
+  <strong>— Acts 4:32</strong>
+</p>

@@ -38,6 +38,53 @@
         </div>
       </div>
 
+      <!-- Invite Members -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>Invite Members</h5>
+        </div>
+        <div class="card-body">
+          <% join_url = "#{app_url}/churches/#{@church.id}" %>
+          <% qr_url = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=#{CGI.escape(join_url)}&color=0d6efd" %>
+
+          <!-- Share Link -->
+          <h6 class="mb-2"><i class="bi bi-link-45deg me-1"></i>Share Sign-Up Link</h6>
+          <p class="text-muted small">Share this link with people at church, in group chats, or on your bulletin:</p>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" value="<%= join_url %>" readonly id="church-join-link">
+            <button class="btn btn-outline-primary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('church-join-link').value); this.innerHTML='<i class=\'bi bi-check-lg me-1\'></i>Copied!'; setTimeout(() => this.innerHTML='<i class=\'bi bi-clipboard me-1\'></i>Copy', 2000)">
+              <i class="bi bi-clipboard me-1"></i>Copy
+            </button>
+          </div>
+
+          <div class="text-center mb-4">
+            <p class="text-muted small mb-2">Or scan this QR code:</p>
+            <img src="<%= qr_url %>" alt="QR code to join <%= @church.name %>" width="200" height="200" class="rounded" style="border: 1px solid #dee2e6;">
+          </div>
+
+          <hr>
+
+          <!-- Invite by Email -->
+          <h6 class="mb-2"><i class="bi bi-envelope me-1"></i>Invite by Email</h6>
+          <p class="text-muted small">Send an invitation email directly. They'll receive a link to set their password and join.</p>
+          <%= form_with url: invite_member_church_admin_path, method: :post, local: true, class: "row g-2 align-items-end" do %>
+            <div class="col-12 col-md-4">
+              <label class="form-label small fw-semibold" for="invite_name">Name</label>
+              <input type="text" name="invite_name" id="invite_name" class="form-control" placeholder="Their name" required>
+            </div>
+            <div class="col-12 col-md-5">
+              <label class="form-label small fw-semibold" for="invite_email">Email</label>
+              <input type="email" name="invite_email" id="invite_email" class="form-control" placeholder="their@email.com" required>
+            </div>
+            <div class="col-12 col-md-3">
+              <button type="submit" class="btn btn-info text-white w-100">
+                <i class="bi bi-send me-1"></i>Invite
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
       <!-- Pending Members -->
       <div class="card shadow-sm mb-4">
         <div class="card-header bg-warning text-dark">

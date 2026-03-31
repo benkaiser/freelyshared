@@ -69,6 +69,15 @@ class ChurchMember < ApplicationRecord
     church_memberships.find_by(church_id: church.id)
   end
 
+  # Stateless unsubscribe tokens via Rails signed_id
+  def email_unsubscribe_token(category)
+    signed_id(purpose: "unsubscribe_#{category}", expires_in: 90.days)
+  end
+
+  def self.find_by_unsubscribe_token(token, category)
+    find_signed(token, purpose: "unsubscribe_#{category}")
+  end
+
   # Devise: block suspended members from signing in.
   # Allow login if they have ANY approved membership.
   def active_for_authentication?

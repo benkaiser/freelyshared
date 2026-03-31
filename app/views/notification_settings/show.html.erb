@@ -5,10 +5,92 @@
     <div class="col-md-6">
       <h2 class="mb-4"><i class="bi bi-bell text-primary me-2"></i>Notification Settings</h2>
 
-      <div class="card mb-4">
+      <!-- Email Notifications -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-envelope me-2"></i>Email Notifications</h5>
+        </div>
         <div class="card-body p-4">
-          <h5>Push Notifications</h5>
-          <p class="text-muted">Get notified when something happens in your church community.</p>
+          <p class="text-muted">Choose which emails you receive from FreelyShared.</p>
+
+          <%= form_with url: update_email_preferences_notification_settings_path, method: :patch, local: true do %>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input type="hidden" name="email_notify_new_needs" value="0">
+                <%= check_box_tag :email_notify_new_needs, "1", @member.email_notify_new_needs,
+                    class: "form-check-input", role: "switch", id: "email_notify_new_needs" %>
+                <label class="form-check-label" for="email_notify_new_needs">
+                  <strong>New needs posted</strong>
+                  <br><small class="text-muted">Get emailed when someone in your church posts a need (max 1 per day per church)</small>
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input type="hidden" name="email_notify_new_items" value="0">
+                <%= check_box_tag :email_notify_new_items, "1", @member.email_notify_new_items,
+                    class: "form-check-input", role: "switch", id: "email_notify_new_items" %>
+                <label class="form-check-label" for="email_notify_new_items">
+                  <strong>New items listed</strong>
+                  <br><small class="text-muted">Get emailed when someone lists a new item to share</small>
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input type="hidden" name="email_notify_new_services" value="0">
+                <%= check_box_tag :email_notify_new_services, "1", @member.email_notify_new_services,
+                    class: "form-check-input", role: "switch", id: "email_notify_new_services" %>
+                <label class="form-check-label" for="email_notify_new_services">
+                  <strong>New services offered</strong>
+                  <br><small class="text-muted">Get emailed when someone offers a new service</small>
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input type="hidden" name="email_notify_church_activation" value="0">
+                <%= check_box_tag :email_notify_church_activation, "1", @member.email_notify_church_activation,
+                    class: "form-check-input", role: "switch", id: "email_notify_church_activation" %>
+                <label class="form-check-label" for="email_notify_church_activation">
+                  <strong>Church activation</strong>
+                  <br><small class="text-muted">Get emailed when your church reaches 5 members and becomes active</small>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check me-1"></i>Save Email Preferences
+            </button>
+          <% end %>
+
+          <div class="mt-3">
+            <% if @member.email_notify_new_needs || @member.email_notify_new_items || @member.email_notify_new_services || @member.email_notify_church_activation %>
+              <%= button_to "Unsubscribe from all", update_email_preferences_notification_settings_path,
+                    method: :patch,
+                    params: { email_notify_new_needs: "0", email_notify_new_items: "0", email_notify_new_services: "0", email_notify_church_activation: "0" },
+                    class: "btn btn-outline-danger",
+                    data: { turbo_confirm: "Unsubscribe from all notification emails?" } %>
+            <% else %>
+              <%= button_to "Re-subscribe to defaults", update_email_preferences_notification_settings_path,
+                    method: :patch,
+                    params: { email_notify_new_needs: "1", email_notify_new_items: "0", email_notify_new_services: "0", email_notify_church_activation: "1" },
+                    class: "btn btn-outline-success" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Push Notifications -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-phone me-2"></i>Push Notifications</h5>
+        </div>
+        <div class="card-body p-4">
+          <p class="text-muted">Get instant notifications on this device.</p>
 
           <div id="push-notification-setup" data-controller="push-notifications" data-push-notifications-vapid-key-value="<%= ENV['VAPID_PUBLIC_KEY'] %>">
             <button class="btn btn-primary" data-action="click->push-notifications#subscribe" data-push-notifications-target="subscribeBtn">
@@ -23,9 +105,9 @@
 
       <% if @subscriptions.any? %>
         <% @subscriptions.each do |sub| %>
-          <div class="card mb-3">
+          <div class="card shadow-sm mb-3">
             <div class="card-body p-4">
-              <h5>Notification Preferences</h5>
+              <h6>Push Notification Preferences</h6>
               <%= form_with url: notification_settings_path, method: :patch, class: "row g-3" do |f| %>
                 <%= hidden_field_tag :subscription_id, sub.id %>
 
@@ -34,7 +116,6 @@
                     <%= check_box_tag :notify_new_needs, true, sub.notify_new_needs, class: "form-check-input", role: "switch" %>
                     <label class="form-check-label" for="notify_new_needs">
                       <strong>New needs posted</strong>
-                      <br><small class="text-muted">Get notified when someone in your church posts a need</small>
                     </label>
                   </div>
                 </div>
@@ -44,7 +125,6 @@
                     <%= check_box_tag :notify_new_services, true, sub.notify_new_services, class: "form-check-input", role: "switch" %>
                     <label class="form-check-label" for="notify_new_services">
                       <strong>New services offered</strong>
-                      <br><small class="text-muted">Get notified when someone offers a new service</small>
                     </label>
                   </div>
                 </div>
@@ -54,7 +134,6 @@
                     <%= check_box_tag :notify_new_items, true, sub.notify_new_items, class: "form-check-input", role: "switch" %>
                     <label class="form-check-label" for="notify_new_items">
                       <strong>New items listed</strong>
-                      <br><small class="text-muted">Get notified when someone lists a new item to share</small>
                     </label>
                   </div>
                 </div>
@@ -64,23 +143,17 @@
                     <%= check_box_tag :notify_borrow_requests, true, sub.notify_borrow_requests, class: "form-check-input", role: "switch" %>
                     <label class="form-check-label" for="notify_borrow_requests">
                       <strong>Borrow requests</strong>
-                      <br><small class="text-muted">Get notified when someone wants to borrow your item</small>
                     </label>
                   </div>
                 </div>
 
                 <div class="col-12">
-                  <%= f.submit "Save Preferences", class: "btn btn-primary" %>
+                  <%= f.submit "Save Push Preferences", class: "btn btn-outline-primary" %>
                 </div>
               <% end %>
             </div>
           </div>
         <% end %>
-      <% else %>
-        <div class="alert alert-info">
-          <i class="bi bi-info-circle me-1"></i>
-          Enable push notifications above to configure your preferences.
-        </div>
       <% end %>
 
       <div class="text-center mt-3">

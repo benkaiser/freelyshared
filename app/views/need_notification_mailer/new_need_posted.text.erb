@@ -1,0 +1,14 @@
+Hi <%= @member.name %>,
+
+<%= @need.church_member.name %> posted a need in <%= @church.name %>:
+
+<%= @need.title %>
+<%= @need.description.present? ? truncate(@need.description, length: 200) : "" %>
+<% if @need.contact_info.present? %>
+Contact: <%= @need.contact_info %>
+<% end %>
+
+View need: <%= need_url(@need) %>
+
+--
+FreelyShared — Share Freely. Love Generously.

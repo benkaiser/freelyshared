@@ -1,0 +1,62 @@
+<% content_for :title, "Email Preferences - FreelyShared" %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+          <i class="bi bi-envelope-x text-primary" style="font-size: 3rem;"></i>
+        </div>
+
+        <div class="card shadow-sm">
+          <div class="card-body p-4 text-center">
+            <% if @error %>
+              <h3 class="mb-3">Link Expired</h3>
+              <p class="text-muted"><%= @error %></p>
+              <p class="text-muted">Please sign in to manage your email preferences.</p>
+              <%= link_to "Sign In", new_church_member_session_path, class: "btn btn-primary" %>
+
+            <% elsif @success %>
+              <h3 class="mb-3">Unsubscribed</h3>
+              <% category_label = {
+                "new_needs" => "new needs",
+                "new_items" => "new items",
+                "new_services" => "new services",
+                "church_activation" => "church activation",
+                "all" => "all notification"
+              }[@category] || @category %>
+              <p class="text-muted">
+                You've been unsubscribed from <strong><%= category_label %></strong> emails.
+              </p>
+              <p class="text-muted">You'll still receive essential account emails (password resets, borrow requests, etc.).</p>
+              <% if church_member_signed_in? %>
+                <%= link_to "Manage All Preferences", notification_settings_path, class: "btn btn-outline-primary" %>
+              <% end %>
+
+            <% else %>
+              <h3 class="mb-3">Unsubscribe</h3>
+              <% category_label = {
+                "new_needs" => "new needs",
+                "new_items" => "new items",
+                "new_services" => "new services",
+                "church_activation" => "church activation",
+                "all" => "all notification"
+              }[@category] || @category %>
+              <p class="text-muted">
+                Stop receiving <strong><%= category_label %></strong> emails from FreelyShared?
+              </p>
+              <%= form_with url: email_unsubscribe_path, method: :patch, local: true do %>
+                <input type="hidden" name="token" value="<%= params[:token] %>">
+                <input type="hidden" name="category" value="<%= @category %>">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i class="bi bi-envelope-x me-2"></i>Unsubscribe
+                </button>
+              <% end %>
+              <p class="text-muted small mt-3">You can re-enable these anytime in your notification settings.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

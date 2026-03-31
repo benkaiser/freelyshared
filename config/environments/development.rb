@@ -33,13 +33,28 @@ Rails.application.configure do
   config.active_storage.service = ENV["AZURE_STORAGE_ACCOUNT_NAME"].present? ? :azure : :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = ENV["SMTP_ADDRESS"].present?
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  # Set host to be used by links generated in mailer templates.
+  app_url = URI.parse(ENV.fetch("APP_URL", "http://localhost:8888"))
+  config.action_mailer.default_url_options = { host: app_url.host, port: app_url.port == app_url.default_port ? nil : app_url.port, protocol: app_url.scheme }
+
+  # Use SMTP if configured, otherwise use letter_opener or default
+  if ENV["SMTP_ADDRESS"].present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: ENV["SMTP_ADDRESS"],
+      port: ENV.fetch("SMTP_PORT", 587).to_i,
+      domain: ENV.fetch("SMTP_DOMAIN", "freelyshared.org"),
+      user_name: ENV["SMTP_USERNAME"],
+      password: ENV["SMTP_PASSWORD"],
+      authentication: ENV.fetch("SMTP_AUTHENTICATION", "login").to_sym,
+      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS", "true") == "true"
+    }
+  end
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

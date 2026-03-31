@@ -1,0 +1,24 @@
+<p>Hi <%= @member.name %>,</p>
+
+<p>
+  <strong><%= @invited_by.name %></strong> has added you to
+  <strong><%= @church.name %></strong> on FreelyShared — a place for your church
+  community to share goods and offer skills to serve one another.
+</p>
+
+<p>Click the button below to set your password and get started:</p>
+
+<p style="text-align: center;">
+  <a href="<%= @reset_url %>" class="btn">Set My Password</a>
+</p>
+
+<p>
+  Once you've set your password, you can sign in and start browsing what your
+  church community has to share.
+</p>
+
+<p style="text-align: center; margin: 24px 0; color: #6c757d;">
+  <em>"All the believers were one in heart and mind. No one claimed that any of their
+  possessions was their own, but they shared everything they had."</em><br>
+  <strong>— Acts 4:32</strong>
+</p>

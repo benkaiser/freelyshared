@@ -1,29 +1,56 @@
-<h2>Sign up</h2>
+<% content_for :title, "Sign Up - FreelyShared" %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "church_members/shared/error_messages", resource: resource %>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+          <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
+          <h2 class="mt-2">Create Account</h2>
+          <p class="text-muted">Join a FreelyShared community</p>
+        </div>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "row g-3" }) do |f| %>
+              <%= render "church_members/shared/error_messages", resource: resource %>
+
+              <div class="col-12">
+                <%= f.label :email, class: "form-label fw-semibold" %>
+                <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg", placeholder: "your@email.com" %>
+              </div>
+
+              <div class="col-12">
+                <%= f.label :password, class: "form-label fw-semibold" %>
+                <%= f.password_field :password, autocomplete: "new-password", class: "form-control form-control-lg", placeholder: "Choose a password" %>
+                <% if @minimum_password_length %>
+                  <small class="text-muted"><%= @minimum_password_length %> characters minimum</small>
+                <% end %>
+              </div>
+
+              <div class="col-12">
+                <%= f.label :password_confirmation, "Confirm password", class: "form-label fw-semibold" %>
+                <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control form-control-lg", placeholder: "Confirm your password" %>
+              </div>
+
+              <div class="col-12">
+                <%= f.submit "Sign up", class: "btn btn-primary btn-lg w-100" %>
+              </div>
+            <% end %>
+
+            <hr class="my-3">
+            <div class="text-center">
+              <%= link_to "Already have an account? Sign in", new_church_member_session_path, class: "text-muted" %>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <p class="text-muted">
+            Looking for a church? <%= link_to "Find your church", root_path %> to join.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "church_members/shared/links" %>
+</section>

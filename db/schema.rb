@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_30_100004) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_31_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_100004) do
     t.boolean "superadmin", default: false, null: false
     t.boolean "suspended", default: false, null: false
     t.datetime "suspended_at"
+    t.boolean "email_notify_new_needs", default: true, null: false
+    t.boolean "email_notify_new_items", default: false, null: false
+    t.boolean "email_notify_new_services", default: false, null: false
+    t.boolean "email_notify_church_activation", default: true, null: false
     t.index ["church_id", "approval_status"], name: "index_church_members_on_church_id_and_approval_status"
     t.index ["church_id"], name: "index_church_members_on_church_id"
     t.index ["email"], name: "index_church_members_on_email", unique: true
@@ -119,6 +123,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_30_100004) do
     t.boolean "archived", default: false, null: false
     t.datetime "archived_at"
     t.boolean "demo", default: false, null: false
+    t.datetime "last_need_email_sent_at"
+    t.datetime "last_item_email_sent_at"
+    t.datetime "last_service_email_sent_at"
     t.index ["latitude", "longitude"], name: "index_churches_on_latitude_and_longitude"
     t.index ["name"], name: "index_churches_on_name"
     t.index ["status"], name: "index_churches_on_status"

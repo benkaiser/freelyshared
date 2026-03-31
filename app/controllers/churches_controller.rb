@@ -42,6 +42,7 @@ class ChurchesController < ApplicationController
             joined_at: Time.current
           )
           session[:current_church_id] = @church.id
+          ChurchRegistrationMailer.welcome_registrant(current_church_member, @church).deliver_later
           redirect_to thankyou_church_path(@church)
         else
           # New user registering a church — create ChurchMember + membership
@@ -80,12 +81,14 @@ class ChurchesController < ApplicationController
                 approval_status: "approved",
                 joined_at: Time.current
               )
+              InvitationMailer.invite_member(initial_member, @church, invited_by: member).deliver_later
             end
           end
 
           # Sign in the registrant
           sign_in(member)
           session[:current_church_id] = @church.id
+          ChurchRegistrationMailer.welcome_registrant(member, @church).deliver_later
           redirect_to thankyou_church_path(@church)
         end
       else

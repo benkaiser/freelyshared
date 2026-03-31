@@ -1,16 +1,37 @@
-<h2>Resend unlock instructions</h2>
+<% content_for :title, "Resend Unlock Instructions - FreelyShared" %>
 
-<%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "church_members/shared/error_messages", resource: resource %>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+          <i class="bi bi-unlock text-primary" style="font-size: 3rem;"></i>
+          <h2 class="mt-2">Unlock Your Account</h2>
+          <p class="text-muted">Enter your email to receive unlock instructions.</p>
+        </div>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <%= form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post, class: "row g-3" }) do |f| %>
+              <%= render "church_members/shared/error_messages", resource: resource %>
+
+              <div class="col-12">
+                <%= f.label :email, class: "form-label fw-semibold" %>
+                <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg", placeholder: "your@email.com" %>
+              </div>
+
+              <div class="col-12">
+                <%= f.submit "Resend unlock instructions", class: "btn btn-primary btn-lg w-100" %>
+              </div>
+            <% end %>
+
+            <hr class="my-3">
+            <div class="text-center">
+              <%= link_to "Back to sign in", new_church_member_session_path, class: "text-muted" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="actions">
-    <%= f.submit "Resend unlock instructions" %>
-  </div>
-<% end %>
-
-<%= render "church_members/shared/links" %>
+</section>

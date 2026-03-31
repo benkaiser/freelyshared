@@ -1,35 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: linear-gradient(135deg, #6c757d, #adb5bd); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
-    .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
-    .footer { text-align: center; margin-top: 20px; color: #6c757d; font-size: 14px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Membership Update</h1>
-      <p><%= @church.name %></p>
-    </div>
-    <div class="content">
-      <p>Hi <%= @member.name %>,</p>
-      <p>
-        Thank you for your interest in joining <strong><%= @church.name %></strong> on FreelyShared.
-        Unfortunately, your membership request was not approved at this time.
-      </p>
-      <p>
-        If you believe this was a mistake, we encourage you to reach out to the church leadership directly.
-        They'll be happy to help.
-      </p>
-      <p>God bless,<br>The FreelyShared Team</p>
-    </div>
-    <div class="footer">
-      <p>FreelyShared — Share Freely. Love Generously.</p>
-    </div>
-  </div>
-</body>
-</html>
+<p>Hi <%= @member.name %>,</p>
+
+<p>
+  Thank you for your interest in joining <strong><%= @church.name %></strong> on FreelyShared.
+  Unfortunately, your membership request was not approved at this time.
+</p>
+
+<p>
+  If you believe this was a mistake, we encourage you to reach out to the church leadership directly.
+  They'll be happy to help.
+</p>
+
+<p>God bless,<br>The FreelyShared Team</p>

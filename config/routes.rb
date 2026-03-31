@@ -25,6 +25,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Email unsubscribe (no login required)
+  resource :email_unsubscribe, only: [ :show, :update ], controller: "email_unsubscribe"
+
   # Authenticated routes
   authenticate :church_member do
     # Church switcher
@@ -65,9 +68,12 @@ Rails.application.routes.draw do
       post :approve_member
       post :reject_member
       post :toggle_admin
+      post :invite_member
     end
 
-    resource :notification_settings, only: [ :show, :update ]
+    resource :notification_settings, only: [ :show, :update ] do
+      patch :update_email_preferences
+    end
 
     resources :push_subscriptions, only: [ :create ]
 
@@ -86,6 +92,7 @@ Rails.application.routes.draw do
     resources :churches, only: [ :index, :show ] do
       member do
         post :activate
+        post :deactivate
         post :archive
         post :unarchive
         patch :update_settings

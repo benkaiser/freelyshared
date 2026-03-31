@@ -1,0 +1,22 @@
+<p>Hi <%= @member.name %>,</p>
+
+<p>
+  <strong><%= @need.church_member.name %></strong> posted a need in
+  <strong><%= @church.name %></strong>:
+</p>
+
+<h3 style="margin: 16px 0 8px;"><%= @need.title %></h3>
+
+<% if @need.description.present? %>
+  <p style="color: #555;"><%= truncate(@need.description, length: 200) %></p>
+<% end %>
+
+<% if @need.contact_info.present? %>
+  <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+    <strong>Contact:</strong> <%= @need.contact_info %>
+  </div>
+<% end %>
+
+<p style="text-align: center;">
+  <a href="<%= need_url(@need) %>" class="btn">View Need</a>
+</p>

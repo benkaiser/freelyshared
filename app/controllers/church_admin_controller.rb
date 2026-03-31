@@ -43,6 +43,52 @@ class ChurchAdminController < ApplicationController
     redirect_to church_admin_path, notice: "#{membership.church_member.name} admin status updated."
   end
 
+  def invite_member
+    @church = current_church
+    email = params[:invite_email]&.strip
+    name = params[:invite_name]&.strip
+
+    if email.blank? || name.blank?
+      redirect_to church_admin_path, alert: "Please provide both a name and email."
+      return
+    end
+
+    existing = ChurchMember.find_by(email: email)
+    if existing
+      # Existing user — just create a membership
+      if existing.membership_for(@church)
+        redirect_to church_admin_path, alert: "#{name} is already a member of this church."
+        return
+      end
+      @church.church_memberships.create!(
+        church_member: existing,
+        approval_status: "approved",
+        joined_at: Time.current
+      )
+      InvitationMailer.invite_member(existing, @church, invited_by: current_church_member).deliver_later
+      redirect_to church_admin_path, notice: "#{name} has been added and notified!"
+    else
+      # New user — create account + membership
+      temp_password = SecureRandom.hex(16)
+      member = ChurchMember.create!(
+        name: name,
+        email: email,
+        password: temp_password,
+        password_confirmation: temp_password,
+        church: @church
+      )
+      @church.church_memberships.create!(
+        church_member: member,
+        approval_status: "approved",
+        joined_at: Time.current
+      )
+      InvitationMailer.invite_member(member, @church, invited_by: current_church_member).deliver_later
+      redirect_to church_admin_path, notice: "#{name} has been invited and will receive an email to set their password!"
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to church_admin_path, alert: e.record.errors.full_messages.join(", ")
+  end
+
   private
 
   def require_admin!

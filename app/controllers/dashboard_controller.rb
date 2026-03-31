@@ -2,7 +2,34 @@ class DashboardController < ApplicationController
   before_action :authenticate_church_member!
 
   def index
-    redirect_to items_path
+    @member = current_church_member
+    @church = current_church
+
+    # Pending borrow requests on my items
+    @incoming_pending = BorrowRequest.pending
+      .joins(:item)
+      .includes(:requester, item: :church_member)
+      .where(items: { church_member_id: @member.id })
+      .order(created_at: :desc)
+
+    # Recent items from the church (limit 8 for the preview row)
+    @recent_items = @church.visible_items
+      .includes(:church_member, photo_attachment: :blob)
+      .order(created_at: :desc)
+      .limit(8)
+
+    # Open needs
+    @recent_needs = @church.visible_needs
+      .open_needs
+      .includes(:church_member)
+      .order(created_at: :desc)
+      .limit(5)
+
+    # Services
+    @recent_services = @church.visible_services_listings
+      .includes(:church_member)
+      .order(created_at: :desc)
+      .limit(6)
   end
 
   def my_listings
